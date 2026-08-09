@@ -1,40 +1,29 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class SanitizationMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     if (req.body && typeof req.body === 'object') {
-      req.body = this.sanitizeObject(req.body) as typeof req.body;
-    }
-    if (req.query && typeof req.query === 'object') {
-      req.query = this.sanitizeObject(req.query as Record<string, unknown>) as typeof req.query;
-    }
-    if (req.params && typeof req.params === 'object') {
-      req.params = this.sanitizeObject(req.params as Record<string, unknown>) as typeof req.params;
+      this.sanitizeObject(req.body);
     }
     next();
   }
 
-  private sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
-    const sanitized: Record<string, unknown> = {};
+  private sanitizeObject(obj: Record<string, unknown>): void {
     for (const [key, value] of Object.entries(obj)) {
-      sanitized[key] = this.sanitizeValue(value);
+      if (typeof value === 'string') {
+        obj[key] = this.sanitizeString(value);
+      } else if (Array.isArray(value)) {
+        value.forEach((v) => {
+          if (typeof v === 'object' && v !== null) {
+            this.sanitizeObject(v as Record<string, unknown>);
+          }
+        });
+      } else if (value && typeof value === 'object') {
+        this.sanitizeObject(value as Record<string, unknown>);
+      }
     }
-    return sanitized;
-  }
-
-  private sanitizeValue(value: unknown): unknown {
-    if (typeof value === 'string') {
-      return this.sanitizeString(value);
-    }
-    if (Array.isArray(value)) {
-      return value.map((v) => this.sanitizeValue(v));
-    }
-    if (value && typeof value === 'object') {
-      return this.sanitizeObject(value as Record<string, unknown>);
-    }
-    return value;
   }
 
   private sanitizeString(value: string): string {
