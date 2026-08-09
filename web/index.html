@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GB Messenger — Скачать</title>
+    <link rel="icon" type="image/png" href="assets/icon.png">
     <style>
         * {
             margin: 0;
@@ -12,7 +13,7 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
+            background: linear-gradient(135deg, #075E54 0%, #128C7E 50%, #25D366 100%);
             min-height: 100vh;
             color: #fff;
             padding: 20px;
@@ -25,13 +26,29 @@
             text-align: center;
             padding: 30px 0;
         }
+        .header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
+            font-size: 26px;
+            margin-top: 16px;
+            font-weight: 700;
         }
         .header p {
             opacity: 0.9;
             font-size: 14px;
+            margin-top: 6px;
+        }
+        .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-top: 10px;
         }
         .card {
             background: #fff;
@@ -39,71 +56,75 @@
             padding: 24px;
             margin-bottom: 16px;
             color: #111B21;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .card h2 {
             font-size: 18px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             color: #075E54;
+            font-weight: 600;
         }
         .btn {
             display: block;
             width: 100%;
             padding: 14px 20px;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: 600;
             text-align: center;
             text-decoration: none;
             cursor: pointer;
             border: none;
             margin: 8px 0;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .btn:active {
+            transform: scale(0.98);
         }
         .btn-primary {
             background: #25D366;
             color: #fff;
         }
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+        }
         .btn-secondary {
             background: #ECE5DD;
             color: #075E54;
         }
+        .btn-secondary:hover {
+            box-shadow: 0 4px 12px rgba(7, 94, 84, 0.2);
+        }
         .steps {
             list-style: none;
+            counter-reset: step;
         }
         .steps li {
             display: flex;
             gap: 12px;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #ECE5DD;
         }
         .steps li:last-child {
             border-bottom: none;
         }
         .step-num {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             background: #25D366;
             color: #fff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             flex-shrink: 0;
         }
         .step-text {
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.5;
             color: #3B4A54;
-        }
-        .warning {
-            background: #FFF3E0;
-            border-left: 4px solid #FF9800;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 12px 0;
-            font-size: 13px;
-            color: #E65100;
         }
         .info {
             background: #E8F5E9;
@@ -114,36 +135,86 @@
             font-size: 13px;
             color: #1B5E20;
         }
+        .warning {
+            background: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 13px;
+            color: #E65100;
+        }
+        .properties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .property {
+            background: #F5F5F5;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .property-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #075E54;
+        }
+        .property-label {
+            font-size: 11px;
+            color: #667781;
+            margin-top: 2px;
+        }
         .footer {
             text-align: center;
             padding: 20px 0;
             font-size: 12px;
-            opacity: 0.7;
+            opacity: 0.8;
         }
-        .version {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-top: 8px;
+        .divider {
+            height: 1px;
+            background: #ECE5DD;
+            margin: 16px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📱 GB Messenger</h1>
+            <img src="assets/icon.png" alt="GB Messenger">
+            <h1>GB Messenger</h1>
             <p>Быстрый и безопасный мессенджер</p>
-            <span class="version">Версия 1.0.1</span>
+            <span class="version">Версия 1.0.3</span>
         </div>
 
         <div class="card">
-            <h2>🍏 Установка на iPhone (iOS 14-17)</h2>
-            <p style="font-size: 13px; color: #667781; margin-bottom: 16px;">
+            <h2>Для iPhone (iOS 14-17)</h2>
+            <p style="font-size: 13px; color: #667781; margin-bottom: 14px;">
                 Для установки необходим TrollStore — бесплатный установщик приложений.
             </p>
-            
+
+            <div class="properties">
+                <div class="property">
+                    <div class="property-value">∞</div>
+                    <div class="property-label">Бессрочно</div>
+                </div>
+                <div class="property">
+                    <div class="property-value">0</div>
+                    <div class="property-label">Без ПК</div>
+                </div>
+                <div class="property">
+                    <div class="property-value">0</div>
+                    <div class="property-label">Без Apple ID</div>
+                </div>
+                <div class="property">
+                    <div class="property-value">14-17</div>
+                    <div class="property-label">iOS версия</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
             <h3 style="font-size: 14px; margin-bottom: 12px;">Инструкция:</h3>
             <ol class="steps">
                 <li>
@@ -161,30 +232,30 @@
                 </li>
                 <li>
                     <span class="step-num">4</span>
-                    <span class="step-text">Нажмите <strong>«Install»</strong> — приложение установлено!</span>
+                    <span class="step-text">Нажмите <strong>«Install»</strong> — приложение установлено</span>
                 </li>
             </ol>
 
             <div class="info">
-                ✅ TrollStore устанавливает приложения <strong>бессрочно</strong> — не нужно обновлять каждую неделю.
+                TrollStore устанавливает приложения <strong>бессрочно</strong> — не нужно обновлять каждую неделю.
             </div>
 
             <div class="warning">
-                ⚠️ TrollStore работает только на <strong>iOS 14.0 — 17.0</strong>. 
+                TrollStore работает только на <strong>iOS 14.0 — 17.0</strong>. 
                 Проверьте версию в Настройки → Основные → Об этом устройстве.
             </div>
 
             <a href="https://github.com/gig077882-cmyk/GB_Messenger/releases/latest/download/app-release.ipa" class="btn btn-primary">
-                📥 Скачать IPA
+                Скачать IPA
             </a>
         </div>
 
         <div class="card">
-            <h2>🤖 Установка на Android</h2>
-            <p style="font-size: 13px; color: #667781; margin-bottom: 16px;">
+            <h2>Для Android</h2>
+            <p style="font-size: 13px; color: #667781; margin-bottom: 14px;">
                 Просто скачайте и установите APK файл.
             </p>
-            
+
             <ol class="steps">
                 <li>
                     <span class="step-num">1</span>
@@ -201,25 +272,25 @@
             </ol>
 
             <a href="https://github.com/gig077882-cmyk/GB_Messenger/releases/latest/download/app-release.apk" class="btn btn-primary">
-                📥 Скачать APK
+                Скачать APK
             </a>
         </div>
 
         <div class="card">
-            <h2>❓ Частые вопросы</h2>
+            <h2>Частые вопросы</h2>
             <div style="font-size: 13px; color: #3B4A54; line-height: 1.6;">
                 <p style="margin-bottom: 8px;"><strong>Как проверить версию iOS?</strong></p>
-                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 2px solid #25D366;">
+                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
                     Настройки → Основные → Об этом устройстве → Версия iOS
                 </p>
 
                 <p style="margin-bottom: 8px;"><strong>TrollStore не устанавливается?</strong></p>
-                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 2px solid #25D366;">
+                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
                     Проверьте что iOS 14.0-17.0. На других версиях TrollStore не работает.
                 </p>
 
                 <p style="margin-bottom: 8px;"><strong>Приложение не запускается?</strong></p>
-                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 2px solid #25D366;">
+                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
                     Удалите и переустановите через TrollStore. Если проблема остаётся — напишите в поддержку.
                 </p>
             </div>
