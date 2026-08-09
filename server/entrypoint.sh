@@ -1,9 +1,8 @@
 #!/bin/sh
 set -e
 
-# Run database migrations
+# Run database migrations using DATABASE_URL from environment
 cd /app
-export DATABASE_URL="postgresql://gbuser:${POSTGRES_PASSWORD}@postgres:5432/gb_messenger?schema=public"
 npx prisma migrate deploy
 
 # Start the application
