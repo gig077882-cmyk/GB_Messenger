@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627832472046",
+    "project_id": "gb-messenger-75fdb",
+    "storage_bucket": "gb-messenger-75fdb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627832472046:android:a3c58a2fdcaa13386d8eff",
+        "android_client_info": {
+          "package_name": "com.gb.gb_messenger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxORE2mHsJGxqDAKPuKXwHphrPXLxschg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
