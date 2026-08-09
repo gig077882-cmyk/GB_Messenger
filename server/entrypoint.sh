@@ -1,8 +1,11 @@
 #!/bin/sh
 set -e
 
-# Run database migrations using the DATABASE_URL from environment
+# Create .env file with DATABASE_URL for Prisma
 cd /app
+echo "DATABASE_URL=$DATABASE_URL" > .env
+
+# Run database migrations
 npx prisma migrate deploy
 
 # Start the application
