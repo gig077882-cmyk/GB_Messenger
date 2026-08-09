@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gb-messenger-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://gbuser:${POSTGRES_PASSWORD}@postgres:5432/gb_messenger?schema=public
+      - REDIS_URL=redis://redis:6379
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET=gb-media
+      - MINIO_PUBLIC_BASE_URL=http://${SERVER_IP}:9000/gb-media
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_ACCESS_TTL=15m
+      - JWT_REFRESH_TTL=30d
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - CORS_ORIGINS=*
+      - FCM_PROJECT_ID=${FCM_PROJECT_ID}
+      - FCM_CLIENT_EMAIL=${FCM_CLIENT_EMAIL}
+      - FCM_PRIVATE_KEY=${FCM_PRIVATE_KEY}
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+      - LIVEKIT_URL=${LIVEKIT_URL}
+      - TMP_DIR=/tmp
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - app-tmp:/tmp
+    networks:
+      - gb-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: gb-messenger-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=gbuser
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=gb_messenger
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gbuser -d gb_messenger"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gb-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: gb-messenger-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gb-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: gb-messenger-storage
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gb-network
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  app-tmp:
+
+networks:
+  gb-network:
+    driver: bridge

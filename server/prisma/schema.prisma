@@ -1,0 +1,267 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ChatType {
+  DIRECT
+  GROUP
+}
+
+enum MemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  VOICE
+  DOCUMENT
+  CALL
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+enum CallType {
+  AUDIO
+  VIDEO
+}
+
+enum CallStatus {
+  ONGOING
+  COMPLETED
+  MISSED
+  REJECTED
+  CANCELED
+}
+
+model User {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  passwordHash    String
+  displayName     String
+  username        String?          @unique
+  bio             String?
+  phone           String?          @unique
+  avatarKey       String?
+  avatarUrl       String?
+  wallpaperUrl    String?
+  isOnline        Boolean          @default(false)
+  lastSeenAt      DateTime         @default(now())
+  privacySettings Json             @default("{}")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  sessions        Session[]
+  contacts        Contact[]        @relation("ContactOwner")
+  contactOf       Contact[]        @relation("ContactTarget")
+  memberships     ChatMember[]
+  messages        Message[]
+  messageStatuses MessageStatusRow[]
+  statuses        UserStatus[]
+  storyViews      StoryView[]
+  blockedUsers    BlockedUser[]    @relation("Blocker")
+  blockedBy       BlockedUser[]    @relation("Blocked")
+  callLogs        CallLog[]
+  pushTokens      PushToken[]
+  reactions       MessageReaction[]
+  forwardedMessages Message[]     @relation("Forwarded")
+}
+
+model Session {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceId         String
+  refreshTokenHash String
+  fcmToken         String?
+  platform         String?
+  createdAt        DateTime  @default(now())
+  lastActiveAt     DateTime  @default(now())
+
+  @@unique([userId, deviceId])
+}
+
+model PushToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String
+  platform  String   @default("android")
+  createdAt DateTime @default(now())
+
+  @@unique([userId, token])
+}
+
+model Contact {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation("ContactOwner", fields: [userId], references: [id], onDelete: Cascade)
+  contactUserId String
+  contactUser   User     @relation("ContactTarget", fields: [contactUserId], references: [id], onDelete: Cascade)
+  customName    String?
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, contactUserId])
+}
+
+model Chat {
+  id             String    @id @default(cuid())
+  type           ChatType
+  name           String?
+  description    String?
+  avatarKey      String?
+  avatarUrl      String?
+  creatorId      String?
+  wallpaperUrl   String?
+  inviteLink     String?   @unique
+  onlyAdminsCanSend Boolean @default(false)
+  onlyAdminsCanEdit Boolean @default(false)
+  lastMessageAt  DateTime?
+  createdAt      DateTime  @default(now())
+
+  members        ChatMember[]
+  messages       Message[]
+  messageStatuses MessageStatusRow[]
+  callLogs       CallLog[]
+}
+
+model ChatMember {
+  id                 String     @id @default(cuid())
+  chatId             String
+  chat               Chat       @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role               MemberRole @default(MEMBER)
+  isMuted            Boolean    @default(false)
+  lastReadMessageId  String?
+  joinedAt           DateTime   @default(now())
+
+  @@unique([chatId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  chatId    String
+  chat      Chat          @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User          @relation(fields: [senderId], references: [id], onDelete: Restrict)
+  type      MessageType   @default(TEXT)
+  text      String?
+  mediaKey  String?
+  mediaUrl  String?
+  mediaMeta Json?
+  replyToId String?
+  replyTo   Message?      @relation("Reply", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[]     @relation("Reply")
+  isDeleted Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  statuses  MessageStatusRow[]
+  reactions MessageReaction[]
+  forwardedFromId String?
+  forwardedFrom   User?     @relation("Forwarded", fields: [forwardedFromId], references: [id], onDelete: SetNull)
+
+  @@index([chatId, createdAt])
+  @@index([senderId])
+}
+
+model MessageReaction {
+  id        String   @id @default(cuid())
+  messageId String
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String
+  createdAt DateTime @default(now())
+
+  @@unique([messageId, userId])
+  @@index([messageId])
+}
+
+model MessageStatusRow {
+  id        String        @id @default(cuid())
+  messageId String
+  message   Message       @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  chatId    String
+  chat      Chat          @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    MessageStatus @default(SENT)
+  updatedAt DateTime      @updatedAt
+
+  @@unique([messageId, userId])
+  @@index([userId, status])
+}
+
+model UserStatus {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String      @default("IMAGE")
+  text      String?
+  textColor String?
+  bgColor   String?
+  fontStyle String?
+  mediaKey  String?
+  mediaUrl  String?
+  mediaMeta Json?
+  caption   String?
+  privacy   String   @default("everyone")
+  expiresAt DateTime
+  createdAt DateTime    @default(now())
+
+  views     StoryView[]
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model StoryView {
+  id       String     @id @default(cuid())
+  storyId  String
+  story    UserStatus @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  viewerId String
+  viewer   User       @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+  viewedAt DateTime   @default(now())
+
+  @@unique([storyId, viewerId])
+}
+
+model BlockedUser {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation("Blocker", fields: [userId], references: [id], onDelete: Cascade)
+  blockedUserId String
+  blockedUser   User     @relation("Blocked", fields: [blockedUserId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, blockedUserId])
+}
+
+model CallLog {
+  id          String     @id @default(cuid())
+  chatId      String
+  chat        Chat       @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  initiatorId String
+  initiator   User       @relation(fields: [initiatorId], references: [id], onDelete: Cascade)
+  type        CallType
+  status      CallStatus @default(ONGOING)
+  roomId      String?
+  startedAt   DateTime   @default(now())
+  endedAt     DateTime?
+}
