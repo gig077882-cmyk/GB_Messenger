@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-# Create .env file with DATABASE_URL for Prisma
+# Set DATABASE_URL from container environment
 cd /app
-echo "DATABASE_URL=$DATABASE_URL" > .env
+export DATABASE_URL="${DATABASE_URL:-postgresql://gbuser@postgres:5432/gb_messenger?schema=public}"
 
 # Run database migrations
 npx prisma migrate deploy
