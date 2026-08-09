@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Global } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 
+@Global()
 @Injectable()
 export class EncryptionService {
   private readonly logger = new Logger(EncryptionService.name);
