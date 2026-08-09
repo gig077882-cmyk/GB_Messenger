@@ -6,11 +6,7 @@
     <title>GB Messenger — Скачать</title>
     <link rel="icon" type="image/png" href="assets/icon.png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #075E54 0%, #128C7E 50%, #25D366 100%);
@@ -18,30 +14,15 @@
             color: #fff;
             padding: 20px;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            padding: 30px 0;
-        }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { text-align: center; padding: 30px 0; }
         .header img {
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .header h1 {
-            font-size: 26px;
-            margin-top: 16px;
-            font-weight: 700;
-        }
-        .header p {
-            opacity: 0.9;
-            font-size: 14px;
-            margin-top: 6px;
-        }
+        .header h1 { font-size: 26px; margin-top: 16px; font-weight: 700; }
+        .header p { opacity: 0.9; font-size: 14px; margin-top: 6px; }
         .version {
             display: inline-block;
             background: rgba(255,255,255,0.2);
@@ -58,12 +39,8 @@
             color: #111B21;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .card h2 {
-            font-size: 18px;
-            margin-bottom: 14px;
-            color: #075E54;
-            font-weight: 600;
-        }
+        .card h2 { font-size: 18px; margin-bottom: 14px; color: #075E54; font-weight: 600; }
+        .card h3 { font-size: 14px; margin: 16px 0 10px; color: #075E54; }
         .btn {
             display: block;
             width: 100%;
@@ -78,38 +55,21 @@
             margin: 8px 0;
             transition: transform 0.1s, box-shadow 0.1s;
         }
-        .btn:active {
-            transform: scale(0.98);
-        }
-        .btn-primary {
-            background: #25D366;
-            color: #fff;
-        }
-        .btn-primary:hover {
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-        }
-        .btn-secondary {
-            background: #ECE5DD;
-            color: #075E54;
-        }
-        .btn-secondary:hover {
-            box-shadow: 0 4px 12px rgba(7, 94, 84, 0.2);
-        }
-        .steps {
-            list-style: none;
-        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: #25D366; color: #fff; }
+        .btn-primary:hover { box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); }
+        .btn-secondary { background: #ECE5DD; color: #075E54; }
+        .btn-secondary:hover { box-shadow: 0 4px 12px rgba(7, 94, 84, 0.2); }
+        .steps { list-style: none; }
         .steps li {
             display: flex;
             gap: 12px;
             padding: 10px 0;
             border-bottom: 1px solid #ECE5DD;
         }
-        .steps li:last-child {
-            border-bottom: none;
-        }
+        .steps li:last-child { border-bottom: none; }
         .step-num {
-            width: 26px;
-            height: 26px;
+            width: 26px; height: 26px;
             background: #25D366;
             color: #fff;
             border-radius: 50%;
@@ -120,11 +80,7 @@
             font-weight: 700;
             flex-shrink: 0;
         }
-        .step-text {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #3B4A54;
-        }
+        .step-text { font-size: 13px; line-height: 1.5; color: #3B4A54; }
         .info {
             background: #E8F5E9;
             border-left: 4px solid #25D366;
@@ -155,27 +111,10 @@
             border-radius: 8px;
             text-align: center;
         }
-        .property-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #075E54;
-        }
-        .property-label {
-            font-size: 11px;
-            color: #667781;
-            margin-top: 2px;
-        }
-        .footer {
-            text-align: center;
-            padding: 20px 0;
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        .divider {
-            height: 1px;
-            background: #ECE5DD;
-            margin: 16px 0;
-        }
+        .property-value { font-size: 16px; font-weight: 700; color: #075E54; }
+        .property-label { font-size: 11px; color: #667781; margin-top: 2px; }
+        .footer { text-align: center; padding: 20px 0; font-size: 12px; opacity: 0.8; }
+        .divider { height: 1px; background: #ECE5DD; margin: 16px 0; }
         .download-group {
             background: #F8F9FA;
             border-radius: 10px;
@@ -183,13 +122,50 @@
             margin: 12px 0;
         }
         .download-group-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #667781;
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        .video-container {
+            background: #F8F9FA;
+            border-radius: 10px;
+            padding: 14px;
+            margin: 12px 0;
+        }
+        .video-links a {
+            display: block;
+            padding: 10px;
+            margin: 6px 0;
+            background: #fff;
+            border: 1px solid #ECE5DD;
+            border-radius: 8px;
+            color: #075E54;
+            text-decoration: none;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+        .video-links a:hover { background: #E8F5E9; }
+        .ios-version {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #F0F0F0;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .ios-version-badge {
+            background: #25D366;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .ios-version-text { font-size: 13px; color: #3B4A54; }
     </style>
 </head>
 <body>
@@ -202,9 +178,9 @@
         </div>
 
         <div class="card">
-            <h2>Для iPhone (iOS 14-17)</h2>
+            <h2>Установка на iPhone (iOS 14-17)</h2>
             <p style="font-size: 13px; color: #667781; margin-bottom: 14px;">
-                Для установки необходим TrollStore — бесплатный установщик приложений.
+                TrollStore — бесплатный установщик приложений. Установка бессрочная, без ПК, без Apple ID.
             </p>
 
             <div class="properties">
@@ -228,23 +204,70 @@
 
             <div class="divider"></div>
 
-            <h3 style="font-size: 14px; margin-bottom: 12px;">Инструкция:</h3>
+            <h3>Поддерживаемые версии iOS:</h3>
+            <div style="margin-bottom: 16px;">
+                <div class="ios-version">
+                    <span class="ios-version-badge">iOS 14.0 — 14.8.1</span>
+                    <span class="ios-version-text">iPhone 6s — iPhone X</span>
+                </div>
+                <div class="ios-version">
+                    <span class="ios-version-badge">iOS 15.0 — 15.6.1</span>
+                    <span class="ios-version-text">iPhone 6s — iPhone 14</span>
+                </div>
+                <div class="ios-version">
+                    <span class="ios-version-badge">iOS 16.0 — 16.6.1</span>
+                    <span class="ios-version-text">iPhone 8 — iPhone 14</span>
+                </div>
+                <div class="ios-version">
+                    <span class="ios-version-badge">iOS 17.0</span>
+                    <span class="ios-version-text">iPhone 8 — iPhone 14</span>
+                </div>
+            </div>
+
+            <h3>Пошаговая инструкция:</h3>
             <ol class="steps">
                 <li>
                     <span class="step-num">1</span>
-                    <span class="step-text">Скачайте и установите <strong>TrollInstallerX</strong></span>
+                    <span class="step-text">
+                        Проверьте версию iOS:<br>
+                        <strong>Настройки → Основные → Об этом устройстве</strong>
+                    </span>
                 </li>
                 <li>
                     <span class="step-num">2</span>
-                    <span class="step-text">Откройте TrollInstallerX и нажмите <strong>Install TrollStore</strong></span>
+                    <span class="step-text">
+                        Установите <strong>TrollInstallerX</strong> (файл ниже)
+                    </span>
                 </li>
                 <li>
                     <span class="step-num">3</span>
-                    <span class="step-text">Скачайте <strong>GB Messenger IPA</strong></span>
+                    <span class="step-text">
+                        Откройте TrollInstallerX → нажмите <strong>Install TrollStore</strong>
+                    </span>
                 </li>
                 <li>
                     <span class="step-num">4</span>
-                    <span class="step-text">Откройте IPA в TrollStore → Установить</span>
+                    <span class="step-text">
+                        Дождитесь установки. Приложение TrollStore появится на главном экране
+                    </span>
+                </li>
+                <li>
+                    <span class="step-num">5</span>
+                    <span class="step-text">
+                        Скачайте <strong>GB Messenger IPA</strong> (кнопка ниже)
+                    </span>
+                </li>
+                <li>
+                    <span class="step-num">6</span>
+                    <span class="step-text">
+                        Нажмите на файл IPA → выберите <strong>"Открыть в TrollStore"</strong>
+                    </span>
+                </li>
+                <li>
+                    <span class="step-num">7</span>
+                    <span class="step-text">
+                        В TrollStore нажмите <strong>Install</strong> — готово!
+                    </span>
                 </li>
             </ol>
 
@@ -253,14 +276,31 @@
             </div>
 
             <div class="warning">
-                TrollStore работает только на <strong>iOS 14.0 — 17.0</strong>. 
-                Проверьте версию в Настройки → Основные → Об этом устройстве.
+                TrollStore <strong>не работает</strong> на iOS 17.0.1 и выше. Если у вас iOS 17.1+, дождитесь обновления TrollStore.
             </div>
 
+            <h3 style="margin-top: 20px;">Видео-инструкции:</h3>
+            <div class="video-links">
+                <a href="https://www.youtube.com/watch?v=mBLZwBtcxb4" target="_blank">
+                    📹 Как установить TrollStore (2026) — Все методы
+                </a>
+                <a href="https://www.youtube.com/watch?v=JVWEsfvfnzA" target="_blank">
+                    📹 Новая установка TrollStore — Сайдлоадинг IPA
+                </a>
+                <a href="https://www.youtube.com/watch?v=MTl1MCWup58" target="_blank">
+                    📹 TrollStore 2.0 — Полное руководство (iOS 15-17)
+                </a>
+                <a href="https://www.youtube.com/watch?v=fD7JrXMXEP8" target="_blank">
+                    📹 Как установить IPA на iPhone через TrollStore
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
             <div class="download-group">
-                <div class="download-group-title">Скачать TrollStore</div>
+                <div class="download-group-title">Скачать TrollInstallerX</div>
                 <a href="assets/TrollInstallerX.ipa" class="btn btn-secondary" download>
-                    Скачать TrollInstallerX (6.9 MB)
+                    Скачать TrollInstallerX.ipa (6.9 MB)
                 </a>
             </div>
 
@@ -273,7 +313,7 @@
         </div>
 
         <div class="card">
-            <h2>Для Android</h2>
+            <h2>Установка на Android</h2>
             <p style="font-size: 13px; color: #667781; margin-bottom: 14px;">
                 Просто скачайте и установите APK файл.
             </p>
@@ -313,12 +353,17 @@
 
                 <p style="margin-bottom: 8px;"><strong>Приложение не запускается?</strong></p>
                 <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
-                    Удалите и переустановите через TrollStore. Если проблема остаётся — напишите в поддержку.
+                    Удалите и переустановите через TrollStore.
                 </p>
 
                 <p style="margin-bottom: 8px;"><strong>Нужен ли Apple ID?</strong></p>
                 <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
                     Нет, TrollStore не требует Apple ID. Установка полностью бесплатна.
+                </p>
+
+                <p style="margin-bottom: 8px;"><strong>Безопасно ли это?</strong></p>
+                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
+                    Да, TrollStore использует официальный баг CoreTrust Apple. Это не джейлбрейк.
                 </p>
             </div>
         </div>
