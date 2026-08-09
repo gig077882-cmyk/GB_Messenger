@@ -97,7 +97,6 @@
         }
         .steps {
             list-style: none;
-            counter-reset: step;
         }
         .steps li {
             display: flex;
@@ -177,6 +176,20 @@
             background: #ECE5DD;
             margin: 16px 0;
         }
+        .download-group {
+            background: #F8F9FA;
+            border-radius: 10px;
+            padding: 14px;
+            margin: 12px 0;
+        }
+        .download-group-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #667781;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
@@ -185,7 +198,7 @@
             <img src="assets/icon.png" alt="GB Messenger">
             <h1>GB Messenger</h1>
             <p>Быстрый и безопасный мессенджер</p>
-            <span class="version">Версия 1.0.3</span>
+            <span class="version">Версия 1.0.4</span>
         </div>
 
         <div class="card">
@@ -219,20 +232,19 @@
             <ol class="steps">
                 <li>
                     <span class="step-num">1</span>
-                    <span class="step-text">Установите <strong>TrollStore</strong> с официального сайта:<br>
-                    <a href="https://trollstore.io" target="_blank" style="color: #25D366;">trollstore.io</a></span>
+                    <span class="step-text">Скачайте и установите <strong>TrollInstallerX</strong></span>
                 </li>
                 <li>
                     <span class="step-num">2</span>
-                    <span class="step-text">Нажмите кнопку <strong>«Скачать IPA»</strong> ниже</span>
+                    <span class="step-text">Откройте TrollInstallerX и нажмите <strong>Install TrollStore</strong></span>
                 </li>
                 <li>
                     <span class="step-num">3</span>
-                    <span class="step-text">Откройте скачанный файл в <strong>TrollStore</strong></span>
+                    <span class="step-text">Скачайте <strong>GB Messenger IPA</strong></span>
                 </li>
                 <li>
                     <span class="step-num">4</span>
-                    <span class="step-text">Нажмите <strong>«Install»</strong> — приложение установлено</span>
+                    <span class="step-text">Откройте IPA в TrollStore → Установить</span>
                 </li>
             </ol>
 
@@ -245,9 +257,19 @@
                 Проверьте версию в Настройки → Основные → Об этом устройстве.
             </div>
 
-            <a href="https://github.com/gig077882-cmyk/GB_Messenger/releases/latest/download/app-release.ipa" class="btn btn-primary">
-                Скачать IPA
-            </a>
+            <div class="download-group">
+                <div class="download-group-title">Скачать TrollStore</div>
+                <a href="assets/TrollInstallerX.ipa" class="btn btn-secondary" download>
+                    Скачать TrollInstallerX (6.9 MB)
+                </a>
+            </div>
+
+            <div class="download-group">
+                <div class="download-group-title">Скачать GB Messenger</div>
+                <a href="https://github.com/gig077882-cmyk/GB_Messenger/releases/latest/download/app-release.ipa" class="btn btn-primary">
+                    Скачать IPA
+                </a>
+            </div>
         </div>
 
         <div class="card">
@@ -292,6 +314,11 @@
                 <p style="margin-bottom: 8px;"><strong>Приложение не запускается?</strong></p>
                 <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
                     Удалите и переустановите через TrollStore. Если проблема остаётся — напишите в поддержку.
+                </p>
+
+                <p style="margin-bottom: 8px;"><strong>Нужен ли Apple ID?</strong></p>
+                <p style="margin-bottom: 16px; padding-left: 12px; border-left: 3px solid #25D366;">
+                    Нет, TrollStore не требует Apple ID. Установка полностью бесплатна.
                 </p>
             </div>
         </div>
