@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-# Create .env file for Prisma
+# Export DATABASE_URL for Prisma
 cd /app
-echo "DATABASE_URL=$DATABASE_URL" > .env
+export DATABASE_URL="postgresql://gbuser:${POSTGRES_PASSWORD}@postgres:5432/gb_messenger?schema=public"
 
 # Run database migrations
 npx prisma migrate deploy
