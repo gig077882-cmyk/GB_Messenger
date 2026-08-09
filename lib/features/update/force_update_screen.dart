@@ -24,6 +24,11 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
   }
 
   Future<void> _startUpdate() async {
+    if (UpdateService.platform == UpdatePlatform.ios) {
+      await UpdateService().openReleasePage();
+      return;
+    }
+
     setState(() {
       _downloading = true;
       _progress = 0;
@@ -138,7 +143,11 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Повторить'),
+                      child: Text(
+                        UpdateService.platform == UpdatePlatform.ios
+                            ? 'Открыть на GitHub'
+                            : 'Повторить',
+                      ),
                     ),
                   ),
                 if (widget.release.changelog.isNotEmpty) ...[

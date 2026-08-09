@@ -6,10 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReleaseInfo {
   final String version;
   final String downloadUrl;
+  final String htmlUrl;
   final String changelog;
   final bool isCritical;
   final DateTime publishedAt;
@@ -17,16 +19,27 @@ class ReleaseInfo {
   ReleaseInfo({
     required this.version,
     required this.downloadUrl,
+    required this.htmlUrl,
     required this.changelog,
     required this.isCritical,
     required this.publishedAt,
   });
 }
 
+enum UpdatePlatform { android, ios, unsupported }
+
 class UpdateService {
   static const String _repo = 'gig077882-cmyk/GB_Messenger';
   static const String _apiUrl =
       'https://api.github.com/repos/$_repo/releases/latest';
+  static const String _htmlUrl =
+      'https://github.com/$_repo/releases/latest';
+
+  static UpdatePlatform get platform {
+    if (Platform.isAndroid) return UpdatePlatform.android;
+    if (Platform.isIOS) return UpdatePlatform.ios;
+    return UpdatePlatform.unsupported;
+  }
 
   Future<ReleaseInfo?> checkForUpdate() async {
     try {
@@ -65,6 +78,7 @@ class UpdateService {
       return ReleaseInfo(
         version: tag,
         downloadUrl: downloadUrl,
+        htmlUrl: _htmlUrl,
         changelog: (data['body'] as String?) ?? '',
         isCritical: data['prerelease'] == true,
         publishedAt: DateTime.tryParse(data['published_at'] as String? ?? '') ??
@@ -72,6 +86,15 @@ class UpdateService {
       );
     } catch (_) {
       return null;
+    }
+  }
+
+  Future<bool> openReleasePage() async {
+    try {
+      final uri = Uri.parse(_htmlUrl);
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      return false;
     }
   }
 

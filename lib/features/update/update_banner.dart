@@ -22,6 +22,11 @@ class _UpdateBannerState extends State<UpdateBanner> {
   double _progress = 0;
 
   Future<void> _update() async {
+    if (UpdateService.platform == UpdatePlatform.ios) {
+      await UpdateService().openReleasePage();
+      return;
+    }
+
     setState(() {
       _downloading = true;
       _progress = 0;
@@ -89,7 +94,11 @@ class _UpdateBannerState extends State<UpdateBanner> {
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.white24,
                   ),
-                  child: const Text('Обновить'),
+                  child: Text(
+                    UpdateService.platform == UpdatePlatform.ios
+                        ? 'Открыть на GitHub'
+                        : 'Обновить',
+                  ),
                 ),
                 const SizedBox(width: 4),
                 IconButton(
