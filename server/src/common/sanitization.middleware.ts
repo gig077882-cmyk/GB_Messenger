@@ -5,13 +5,13 @@ import { Request, Response, NextFunction } from 'express';
 export class SanitizationMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     if (req.body && typeof req.body === 'object') {
-      req.body = this.sanitizeObject(req.body);
+      req.body = this.sanitizeObject(req.body) as typeof req.body;
     }
     if (req.query && typeof req.query === 'object') {
-      req.query = this.sanitizeObject(req.query);
+      req.query = this.sanitizeObject(req.query as Record<string, unknown>) as typeof req.query;
     }
     if (req.params && typeof req.params === 'object') {
-      req.params = this.sanitizeObject(req.params);
+      req.params = this.sanitizeObject(req.params as Record<string, unknown>) as typeof req.params;
     }
     next();
   }
