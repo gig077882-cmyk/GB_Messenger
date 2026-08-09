@@ -31,7 +31,7 @@ jobs:
         run: flutter pub get
       
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=API_BASE=http://155.212.222.168:3000/api
       
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
