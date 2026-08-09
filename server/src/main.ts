@@ -1,5 +1,6 @@
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
@@ -45,7 +46,7 @@ async function bootstrap(): Promise<void> {
   }));
 
   app.enableCors({
-    origin: config.get<string>('CORS_ORIGINS', '*').split(','),
+    origin: (config.get('CORS_ORIGINS') as string ?? '*').split(','),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -84,7 +85,7 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = parseInt(config.get<string>('PORT', '3000'), 10);
+  const port = parseInt(config.get('PORT') as string ?? '3000', 10);
   await app.listen(port);
 
   Logger.log(`API ready on http://localhost:${port}/api`, 'Bootstrap');
