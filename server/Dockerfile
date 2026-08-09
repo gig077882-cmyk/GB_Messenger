@@ -3,9 +3,9 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-COPY prisma ./prisma/
+    COPY prisma ./prisma/
 
-RUN npm ci && npm cache clean --force
+    RUN npm install && npm cache clean --force
 
 COPY . .
 
