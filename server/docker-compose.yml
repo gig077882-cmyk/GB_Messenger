@@ -9,9 +9,9 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
-      - PORT=3000
       - DATABASE_URL=postgresql://gbuser:${POSTGRES_PASSWORD}@postgres:5432/gb_messenger?schema=public
       - REDIS_URL=redis://redis:6379
       - MINIO_ENDPOINT=minio
