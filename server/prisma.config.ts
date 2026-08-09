@@ -6,6 +6,6 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: process.env.DATABASE_URL || `postgresql://gbuser:${process.env.POSTGRES_PASSWORD}@postgres:5432/gb_messenger?schema=public`,
+    url: process.env.DATABASE_URL || 'postgresql://gbuser:d662e5e46b4a16a31808db24fc7d7b74@postgres:5432/gb_messenger?schema=public',
   },
 });
