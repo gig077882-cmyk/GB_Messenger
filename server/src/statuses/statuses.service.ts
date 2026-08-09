@@ -88,7 +88,7 @@ export class StatusesService {
     });
     const viewedSet = new Set(myViewed.map((v) => v.storyId));
 
-    const byUser = new Map<string, { user: unknown; statuses: unknown[] }>();
+    const byUser = new Map<string, { user: unknown; statuses: any[] }>();
     for (const s of statuses) {
       const entry = byUser.get(s.userId) ?? {
         user: s.user,

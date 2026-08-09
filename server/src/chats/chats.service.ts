@@ -298,7 +298,7 @@ export class ChatsService {
 
     if (chat.type === ChatType.DIRECT) {
       // Direct chat with a 3rd participant becomes a group
-      await this.prisma.$transaction(async (tx) => {
+      await this.prisma.$transaction(async (tx: any) => {
         await tx.chat.update({
           where: { id: chatId },
           data: { type: ChatType.GROUP, creatorId: userId },
