@@ -102,8 +102,8 @@ export class RealtimeGateway
       for (const [chatId, messageIds] of byChat) {
         this.realtime.emitToChat(chatId, 'messages:delivered', {
           chatId,
-          userId,
           messageIds,
+          userIds: [userId],
           deliveredAt: new Date().toISOString(),
         });
       }
@@ -209,7 +209,26 @@ export class RealtimeGateway
     );
     if (!call) return;
 
-    this.realtime.emitToChat(payload.chatId, 'call:invite', call);
+    const caller = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        displayName: true,
+        username: true,
+        avatarUrl: true,
+        email: true,
+      },
+    });
+
+    this.realtime.emitToChat(payload.chatId, 'call:invite', {
+      callId: call.callId,
+      chatId: call.chatId,
+      roomId: call.roomId,
+      type: call.type,
+      caller,
+      token: call.token,
+      serverUrl: call.serverUrl,
+    });
   }
 
   @SubscribeMessage('call:end')

@@ -87,9 +87,14 @@ class ApiService {
     await _d.get('/users/search', queryParameters: {'q': q}),
   ).map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>())).toList();
 
-  Future<List<GbUser>> syncContacts(List<String> phones) async => _l(
-    await _d.post('/users/contacts/sync', data: {'phones': phones}),
-  ).map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>())).toList();
+  Future<List<GbUser>> syncContacts(List<String> phones) async {
+    final j = _j(
+      await _d.post('/users/contacts/sync', data: {'phones': phones}),
+    );
+    return ((j['matched'] ?? const []) as List)
+        .map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
+  }
 
   Future<void> blockUser(String id) =>
       _d.post('/users/block', data: {'userId': id});
@@ -207,7 +212,7 @@ class ApiService {
   Future<void> uploadBytes(String url, List<int> bytes, String mimeType) async {
     await _d.put(
       url,
-      data: Stream.fromIterable([bytes]),
+      data: bytes,
       options: Options(
         headers: {'Content-Type': mimeType},
         followRedirects: true,
@@ -270,13 +275,11 @@ class ApiService {
     List<String> messageIds,
     String targetChatId,
   ) async {
-    final j = _j(
-      await _d.post(
-        '/messages/forward',
-        data: {'messageIds': messageIds, 'targetChatId': targetChatId},
-      ),
+    final r = await _d.post(
+      '/messages/forward',
+      data: {'messageIds': messageIds, 'targetChatId': targetChatId},
     );
-    return (j as List)
+    return (r.data as List)
         .map((e) => GbMessage.fromJson((e as Map).cast<String, dynamic>()))
         .toList();
   }

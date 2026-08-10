@@ -258,12 +258,7 @@ export class MessagesService {
       include: messageInclude,
     });
 
-    this.realtime.emitToChat(message.chatId, 'message:update', {
-      chatId: message.chatId,
-      messageId,
-      text: dto.text,
-      updatedAt: updated.updatedAt,
-    });
+    this.realtime.emitToChat(message.chatId, 'message:update', updated);
     return updated;
   }
 
@@ -283,16 +278,13 @@ export class MessagesService {
       throw new ForbiddenException('Cannot delete this message');
     }
 
-    await this.prisma.message.update({
+    const updated = await this.prisma.message.update({
       where: { id: messageId },
       data: { isDeleted: true, text: null },
+      include: messageInclude,
     });
 
-    this.realtime.emitToChat(message.chatId, 'message:update', {
-      chatId: message.chatId,
-      messageId,
-      isDeleted: true,
-    });
+    this.realtime.emitToChat(message.chatId, 'message:update', updated);
     return { deleted: true };
   }
 
@@ -315,6 +307,7 @@ export class MessagesService {
     });
 
     this.realtime.emitToChat(message.chatId, 'message:reaction', {
+      chatId: message.chatId,
       messageId,
       userId,
       emoji: dto.emoji,
@@ -336,6 +329,7 @@ export class MessagesService {
     });
 
     this.realtime.emitToChat(message.chatId, 'message:reaction', {
+      chatId: message.chatId,
       messageId,
       userId,
       emoji: null,

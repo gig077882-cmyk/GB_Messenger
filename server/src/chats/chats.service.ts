@@ -72,10 +72,7 @@ export class ChatsService {
       select: PUBLIC_USER_SELECT,
     });
     if (otherUser) {
-      this.realtime.emitToUser(dto.userId, 'chat:new', {
-        chat: detail,
-        otherUser,
-      });
+      this.realtime.emitToUser(dto.userId, 'chat:new', detail);
     }
     return detail;
   }
@@ -106,11 +103,12 @@ export class ChatsService {
       },
     });
 
+    const detail = await this.getChat(userId, chat.id);
     for (const id of memberIds) {
-      this.realtime.emitToUser(id, 'chat:new', { chatId: chat.id });
+      this.realtime.emitToUser(id, 'chat:new', detail);
     }
 
-    return this.getChat(userId, chat.id);
+    return detail;
   }
 
   async listChats(userId: string) {
@@ -119,7 +117,9 @@ export class ChatsService {
       include: {
         chat: {
           include: {
-            members: { select: { userId: true } },
+            members: {
+              include: { user: { select: PUBLIC_USER_SELECT } },
+            },
             messages: {
               orderBy: { createdAt: 'desc' },
               take: 1,
@@ -142,8 +142,10 @@ export class ChatsService {
           avatarUrl: string | null;
           wallpaperUrl: string | null;
           isMuted: boolean;
+          iAmAdmin: boolean;
           unreadCount: number;
           lastMessage: unknown;
+          members: unknown[];
           otherUser: PublicUser | null;
           lastMessageAt: Date;
         }> => {
@@ -153,12 +155,7 @@ export class ChatsService {
 
           if (chat.type === ChatType.DIRECT) {
             const other = chat.members.find((mm) => mm.userId !== userId);
-            if (other) {
-              otherUser = await this.prisma.user.findUnique({
-                where: { id: other.userId },
-                select: PUBLIC_USER_SELECT,
-              });
-            }
+            otherUser = other?.user ?? null;
           }
 
           if (m.lastReadMessageId) {
@@ -199,8 +196,16 @@ export class ChatsService {
                 : (otherUser?.avatarUrl ?? null),
             wallpaperUrl: chat.wallpaperUrl,
             isMuted: m.isMuted,
+            iAmAdmin: m.role === MemberRole.ADMIN,
             unreadCount,
             lastMessage: chat.messages[0] ?? null,
+            members: chat.members.map((cm) => ({
+              userId: cm.userId,
+              user: cm.user,
+              role: cm.role,
+              isMuted: cm.isMuted,
+              joinedAt: cm.joinedAt,
+            })),
             otherUser,
             lastMessageAt:
               chat.lastMessageAt ?? chat.messages[0]?.createdAt ?? m.joinedAt,
@@ -225,6 +230,11 @@ export class ChatsService {
       where: { id: chatId },
       include: {
         members: { include: { user: { select: PUBLIC_USER_SELECT } } },
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          include: { sender: { select: PUBLIC_USER_SELECT } },
+        },
       },
     });
     if (!chat) throw new NotFoundException('Chat not found');
@@ -233,6 +243,28 @@ export class ChatsService {
     if (chat.type === ChatType.DIRECT) {
       const other = chat.members.find((m) => m.userId !== userId);
       if (other) otherUser = other.user;
+    }
+
+    let unreadCount = 0;
+    if (member.lastReadMessageId) {
+      const lastRead = await this.prisma.message.findUnique({
+        where: { id: member.lastReadMessageId },
+        select: { createdAt: true },
+      });
+      unreadCount = lastRead
+        ? await this.prisma.message.count({
+            where: {
+              chatId,
+              senderId: { not: userId },
+              isDeleted: false,
+              createdAt: { gt: lastRead.createdAt },
+            },
+          })
+        : 0;
+    } else {
+      unreadCount = await this.prisma.message.count({
+        where: { chatId, senderId: { not: userId }, isDeleted: false },
+      });
     }
 
     return {
@@ -244,10 +276,16 @@ export class ChatsService {
       creatorId: chat.creatorId,
       createdAt: chat.createdAt,
       myRole: member.role,
+      iAmAdmin: member.role === MemberRole.ADMIN,
       isMuted: member.isMuted,
       lastReadMessageId: member.lastReadMessageId,
       otherUser,
+      lastMessage: chat.messages[0] ?? null,
+      lastMessageAt:
+        chat.lastMessageAt ?? chat.messages[0]?.createdAt ?? member.joinedAt,
+      unreadCount,
       members: chat.members.map((m) => ({
+        userId: m.userId,
         user: m.user,
         role: m.role,
         isMuted: m.isMuted,
@@ -281,7 +319,8 @@ export class ChatsService {
       where: { id: chatId },
       data,
     });
-    this.realtime.emitToChat(chatId, 'chat:updated', { chatId, ...updated });
+    const detail = await this.getChat(userId, chatId);
+    this.realtime.emitToChat(chatId, 'chat:updated', detail);
     return updated;
   }
 
@@ -290,13 +329,12 @@ export class ChatsService {
     const chat = await this.prisma.chat.findUnique({ where: { id: chatId } });
     if (!chat) throw new NotFoundException('Chat not found');
 
-    const target = await this.prisma.user.findUnique({
-      where: { id: dto.userId },
-    });
-    if (!target) throw new NotFoundException('User not found');
-
     if (chat.type === ChatType.DIRECT) {
       // Direct chat with a 3rd participant becomes a group
+      const target = await this.prisma.user.findUnique({
+        where: { id: dto.userIds[0] },
+      });
+      if (!target) throw new NotFoundException('User not found');
       await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         await tx.chat.update({
           where: { id: chatId },
@@ -311,33 +349,33 @@ export class ChatsService {
           data: { role: MemberRole.ADMIN },
         });
         await tx.chatMember.create({
-          data: { chatId, userId: dto.userId, role: MemberRole.MEMBER },
+          data: { chatId, userId: dto.userIds[0], role: MemberRole.MEMBER },
         });
       });
-      this.realtime.emitToChat(chatId, 'chat:updated', {
-        chatId,
-        type: 'GROUP',
-      });
-      this.realtime.emitToUser(dto.userId, 'chat:new', { chatId });
-      return this.getChat(userId, chatId);
+      const detail = await this.getChat(userId, chatId);
+      this.realtime.emitToChat(chatId, 'chat:updated', detail);
+      this.realtime.emitToUser(dto.userIds[0], 'chat:new', detail);
+      return detail;
     }
 
     if (member.role !== MemberRole.ADMIN) {
       throw new ForbiddenException('Only admins can add members');
     }
 
-    await this.prisma.chatMember.upsert({
-      where: { chatId_userId: { chatId, userId: dto.userId } },
-      create: { chatId, userId: dto.userId },
-      update: {},
+    await this.prisma.chatMember.createMany({
+      data: dto.userIds.map((id) => ({ chatId, userId: id })),
+      skipDuplicates: true,
     });
 
-    this.realtime.emitToUser(dto.userId, 'chat:new', { chatId });
+    const detail = await this.getChat(userId, chatId);
+    for (const id of dto.userIds) {
+      this.realtime.emitToUser(id, 'chat:new', detail);
+    }
     this.realtime.emitToChat(chatId, 'chat:member:added', {
       chatId,
-      member: { userId: dto.userId, role: MemberRole.MEMBER },
+      userIds: dto.userIds,
     });
-    return this.getChat(userId, chatId);
+    return detail;
   }
 
   async removeMember(

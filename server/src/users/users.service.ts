@@ -105,10 +105,16 @@ export class UsersService {
 
       return {
         matched: filtered.map((m) => ({
-          userId: m.id,
-          phone: m.phone,
+          id: m.id,
+          email: m.email,
           displayName: m.displayName,
+          username: m.username,
+          phone: m.phone,
+          avatarKey: m.avatarKey,
           avatarUrl: m.avatarUrl,
+          bio: m.bio,
+          isOnline: m.isOnline,
+          lastSeenAt: m.lastSeenAt,
         })),
       };
     }

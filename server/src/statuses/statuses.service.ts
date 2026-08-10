@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { Prisma } from '../generated/prisma/client';
+import { PUBLIC_USER_SELECT } from '../users/users.select';
 import type {
   CreateStatusDto,
   StatusPrivacyDto,
@@ -31,14 +32,22 @@ export class StatusesService {
     const status = await this.prisma.userStatus.create({
       data: {
         userId,
+        kind: dto.kind ?? 'IMAGE',
+        text: dto.text,
+        textColor: dto.textColor,
+        bgColor: dto.bgColor,
+        fontStyle: dto.fontStyle,
         mediaKey: dto.mediaKey,
         mediaUrl: dto.mediaUrl ?? null,
-        mediaMeta: dto.mediaMeta
-          ? (JSON.parse(dto.mediaMeta) as Prisma.InputJsonValue)
-          : undefined,
+        mediaMeta: dto.mediaMeta as Prisma.InputJsonValue | undefined,
         caption: dto.caption ?? null,
         expiresAt,
       },
+    });
+
+    const full = await this.prisma.userStatus.findUnique({
+      where: { id: status.id },
+      include: { user: { select: PUBLIC_USER_SELECT } },
     });
 
     const contacts = await this.prisma.contact.findMany({
@@ -48,10 +57,10 @@ export class StatusesService {
     this.realtime.emitToUsers(
       contacts.map((c) => c.contactUserId),
       'status:new',
-      { userId, statusId: status.id },
+      full,
     );
 
-    return status;
+    return full;
   }
 
   async feed(userId: string) {
@@ -94,34 +103,25 @@ export class StatusesService {
     });
     const viewedSet = new Set(myViewed.map((v) => v.storyId));
 
-    const byUser = new Map<string, { user: unknown; statuses: any[] }>();
-    for (const s of statuses) {
-      const entry = byUser.get(s.userId) ?? {
-        user: s.user,
-        statuses: [],
-      };
-      entry.statuses.push({
-        id: s.id,
-        mediaKey: s.mediaKey,
-        mediaUrl: s.mediaUrl,
-        mediaMeta: s.mediaMeta,
-        caption: s.caption,
-        createdAt: s.createdAt,
-        expiresAt: s.expiresAt,
-        viewed: viewedSet.has(s.id),
-        viewsCount: s.userId === userId ? s._count.views : undefined,
-        own: s.userId === userId,
-      });
-      byUser.set(s.userId, entry);
-    }
-
-    return [...byUser.values()].sort((a, b) => {
-      const aLast =
-        (a.statuses as Array<{ createdAt: Date }>)[0]?.createdAt ?? new Date(0);
-      const bLast =
-        (b.statuses as Array<{ createdAt: Date }>)[0]?.createdAt ?? new Date(0);
-      return bLast.getTime() - aLast.getTime();
-    });
+    return statuses.map((s) => ({
+      id: s.id,
+      userId: s.userId,
+      user: s.user,
+      kind: s.kind,
+      text: s.text,
+      textColor: s.textColor,
+      bgColor: s.bgColor,
+      fontStyle: s.fontStyle,
+      mediaKey: s.mediaKey,
+      mediaUrl: s.mediaUrl,
+      mediaMeta: s.mediaMeta,
+      caption: s.caption,
+      createdAt: s.createdAt,
+      expiresAt: s.expiresAt,
+      viewed: viewedSet.has(s.id),
+      viewsCount: s.userId === userId ? s._count.views : undefined,
+      own: s.userId === userId,
+    }));
   }
 
   async view(userId: string, statusId: string) {

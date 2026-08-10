@@ -56,8 +56,11 @@ export class UpdateChatDto {
 }
 
 export class AddMemberDto {
-  @IsString()
-  userId!: string;
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(500)
+  @IsString({ each: true })
+  userIds!: string[];
 }
 
 export class ToggleAdminDto {
