@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +17,13 @@ class CallScreen extends StatefulWidget {
   final IncomingCall? incoming;
   final bool isGroup;
 
-  const CallScreen({super.key, required this.chatId, this.type = 'VIDEO', this.incoming, this.isGroup = false});
+  const CallScreen({
+    super.key,
+    required this.chatId,
+    this.type = 'VIDEO',
+    this.incoming,
+    this.isGroup = false,
+  });
 
   @override
   State<CallScreen> createState() => _CallScreenState();
@@ -63,7 +69,9 @@ class _CallScreenState extends State<CallScreen> {
     _callStart = DateTime.now();
     _durationTimer?.cancel();
     _durationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() => _callDuration = DateTime.now().difference(_callStart!));
+      if (mounted) {
+        setState(() => _callDuration = DateTime.now().difference(_callStart!));
+      }
     });
   }
 
@@ -76,7 +84,10 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   Future<void> _accept() async {
-    setState(() { _answered = true; _joining = true; });
+    setState(() {
+      _answered = true;
+      _joining = true;
+    });
     await _joinRoom();
   }
 
@@ -97,16 +108,26 @@ class _CallScreenState extends State<CallScreen> {
         await room.localParticipant?.setCameraEnabled(_cameraOn);
       }
       _room = room;
-      if (mounted) setState(() { _joining = false; _failed = false; });
+      if (mounted) {
+        setState(() {
+          _joining = false;
+          _failed = false;
+        });
+      }
       _startDurationTimer();
       room.addListener(() {
-        if (mounted && room.connectionState == lk.ConnectionState.disconnected) {
+        if (mounted &&
+            room.connectionState == lk.ConnectionState.disconnected) {
           Navigator.of(context).pop();
         }
       });
     } catch (e) {
       if (mounted) {
-        setState(() { _joining = false; _failed = true; _error = e.toString(); });
+        setState(() {
+          _joining = false;
+          _failed = true;
+          _error = e.toString();
+        });
       }
     }
   }
@@ -179,11 +200,14 @@ class _CallScreenState extends State<CallScreen> {
                       const Spacer(),
                       const Padding(
                         padding: EdgeInsets.only(right: 16),
-                        child: Text('GB Call',
-                            style: TextStyle(
-                                color: Colors.white38,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.2)),
+                        child: Text(
+                          'GB Call',
+                          style: TextStyle(
+                            color: Colors.white38,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -202,36 +226,73 @@ class _CallScreenState extends State<CallScreen> {
                   if (!_failed)
                     Column(
                       children: [
-                        Text(title,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontWeight: FontWeight.w700)),
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         if (!_joining && _callDuration.inSeconds > 0)
-                          Text(_durationText,
-                              style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w500)),
+                          Text(
+                            _durationText,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         if (_joining)
-                          const Text('Соединение…',
-                              style: TextStyle(color: Colors.white54, fontSize: 15)),
-                        if (!_joining && _callDuration.inSeconds == 0 && incoming == null)
-                          const Text('Вызов…',
-                              style: TextStyle(color: Colors.white54, fontSize: 15)),
-                        if (!_joining && incoming != null && _callDuration.inSeconds == 0)
-                          const Text('Входящий вызов',
-                              style: TextStyle(color: Colors.white54, fontSize: 15)),
+                          const Text(
+                            'Соединение…',
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 15,
+                            ),
+                          ),
+                        if (!_joining &&
+                            _callDuration.inSeconds == 0 &&
+                            incoming == null)
+                          const Text(
+                            'Вызов…',
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 15,
+                            ),
+                          ),
+                        if (!_joining &&
+                            incoming != null &&
+                            _callDuration.inSeconds == 0)
+                          const Text(
+                            'Входящий вызов',
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 15,
+                            ),
+                          ),
                       ],
                     )
                   else ...[
-                    const Text('РќРµ СѓРґР°Р»РѕСЃСЊ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРІСЏР·СЊ',
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+                    const Text(
+                      'РќРµ СѓРґР°Р»РѕСЃСЊ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРІСЏР·СЊ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
                         'LiveKit-SFU РЅРµРґРѕСЃС‚СѓРїРµРЅ: $_error',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.white38, fontSize: 12),
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
@@ -259,13 +320,17 @@ class _CallScreenState extends State<CallScreen> {
                       children: [
                         _CircleBtn(
                           icon: _microOn ? Icons.mic : Icons.mic_off,
-                          color: _microOn ? const Color(0xFF1E1E1E) : Colors.white24,
+                          color: _microOn
+                              ? const Color(0xFF1E1E1E)
+                              : Colors.white24,
                           onTap: _toggleMicro,
                         ),
                         const SizedBox(width: 20),
                         _CircleBtn(
                           icon: _speakerOn ? Icons.volume_up : Icons.hearing,
-                          color: _speakerOn ? const Color(0xFF1E1E1E) : Colors.white24,
+                          color: _speakerOn
+                              ? const Color(0xFF1E1E1E)
+                              : Colors.white24,
                           onTap: _toggleSpeaker,
                         ),
                         const SizedBox(width: 20),
@@ -275,7 +340,11 @@ class _CallScreenState extends State<CallScreen> {
                             boxShadow: glow(blur: 30),
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.call_end_rounded, color: Colors.white, size: 30),
+                            icon: const Icon(
+                              Icons.call_end_rounded,
+                              color: Colors.white,
+                              size: 30,
+                            ),
                             style: IconButton.styleFrom(
                               backgroundColor: const Color(0xFFFF4D4D),
                               padding: const EdgeInsets.all(22),
@@ -286,7 +355,9 @@ class _CallScreenState extends State<CallScreen> {
                         const SizedBox(width: 20),
                         _CircleBtn(
                           icon: _isVideo ? Icons.videocam : Icons.videocam_off,
-                          color: _isVideo ? const Color(0xFF1E1E1E) : Colors.white24,
+                          color: _isVideo
+                              ? const Color(0xFF1E1E1E)
+                              : Colors.white24,
                           onTap: _isVideo ? _toggleCamera : null,
                         ),
                       ],
@@ -336,14 +407,27 @@ class _CallScreenState extends State<CallScreen> {
           child: Container(
             color: const Color(0xFF1A1A1A),
             child: videoTrack is lk.VideoTrack
-                ? lk.VideoTrackRenderer(videoTrack as lk.VideoTrack, fit: lk.VideoViewFit.cover)
+                ? lk.VideoTrackRenderer(
+                    videoTrack as lk.VideoTrack,
+                    fit: lk.VideoViewFit.cover,
+                  )
                 : Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.person, color: Colors.white38, size: 32),
+                        const Icon(
+                          Icons.person,
+                          color: Colors.white38,
+                          size: 32,
+                        ),
                         const SizedBox(height: 4),
-                        Text(p.identity, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                        Text(
+                          p.identity,
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -375,14 +459,21 @@ class _CallScreenState extends State<CallScreen> {
         gradient: RadialGradient(
           center: const Alignment(0, -0.4),
           radius: 1.1,
-          colors: [const Color(0xFF1E1E1E), const Color(0xFF0A0A0A), Colors.black],
+          colors: [
+            const Color(0xFF1E1E1E),
+            const Color(0xFF0A0A0A),
+            Colors.black,
+          ],
         ),
       ),
       child: Center(
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: GBTheme.whatsAppGreen.withValues(alpha: 0.5), width: 2),
+            border: Border.all(
+              color: GBTheme.whatsAppGreen.withValues(alpha: 0.5),
+              width: 2,
+            ),
             boxShadow: glow(blur: 40),
           ),
           padding: const EdgeInsets.all(6),
@@ -401,11 +492,11 @@ class _CircleBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconButton(
-        icon: Icon(icon, color: Colors.white, size: 26),
-        style: IconButton.styleFrom(
-          backgroundColor: color,
-          padding: const EdgeInsets.all(18),
-        ),
-        onPressed: onTap,
-      );
+    icon: Icon(icon, color: Colors.white, size: 26),
+    style: IconButton.styleFrom(
+      backgroundColor: color,
+      padding: const EdgeInsets.all(18),
+    ),
+    onPressed: onTap,
+  );
 }

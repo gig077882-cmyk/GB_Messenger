@@ -1,4 +1,4 @@
-﻿import '../../core/api_service.dart';
+import '../../core/api_service.dart';
 import '../../core/local_db.dart';
 import '../../core/models.dart';
 import 'models/local_message.dart';
@@ -18,7 +18,10 @@ class ChatRepository {
     return _fetchAndCache(chatId, limit: limit);
   }
 
-  Future<List<GbMessage>> _fetchAndCache(String chatId, {int limit = 50}) async {
+  Future<List<GbMessage>> _fetchAndCache(
+    String chatId, {
+    int limit = 50,
+  }) async {
     try {
       final remote = await _api.messages(chatId, limit: limit);
       final locals = remote.map(_toLocal).toList();
@@ -37,7 +40,10 @@ class ChatRepository {
   }
 
   Future<List<GbMessage>> loadOlder(
-      String chatId, String cursor, {int limit = 50}) async {
+    String chatId,
+    String cursor, {
+    int limit = 50,
+  }) async {
     try {
       final remote = await _api.messages(chatId, cursor: cursor, limit: limit);
       await _local.upsertMessages(remote.map(_toLocal).toList());
@@ -51,8 +57,11 @@ class ChatRepository {
     await _local.upsertMessages([_toLocal(m)]);
   }
 
-  Future<void> onMessageUpdated(String messageId,
-      {String? text, bool? isDeleted}) async {
+  Future<void> onMessageUpdated(
+    String messageId, {
+    String? text,
+    bool? isDeleted,
+  }) async {
     if (isDeleted == true) {
       await _local.deleteMessage(messageId);
     } else {
@@ -90,47 +99,49 @@ class ChatRepository {
       _local.incrementPendingAttempt(localId, error);
 
   GbMessage _toGbMessage(LocalMessage m) => GbMessage(
-        id: m.id,
-        chatId: m.chatId,
-        senderId: m.senderId,
-        type: m.type,
-        text: m.text ?? '',
-        mediaKey: m.mediaKey,
-        mediaUrl: m.mediaUrl,
-        mediaMeta: m.mediaMeta,
-        replyToId: m.replyToId,
-        isDeleted: m.isDeleted,
-        createdAt: m.createdAt,
-        updatedAt: m.updatedAt,
-        statuses: m.statuses
-            .map((s) => MsgStatusRow(
-                  userId: s['userId'] as String,
-                  status: _parseStatus(s['status']),
-                ))
-            .toList(),
-      );
+    id: m.id,
+    chatId: m.chatId,
+    senderId: m.senderId,
+    type: m.type,
+    text: m.text ?? '',
+    mediaKey: m.mediaKey,
+    mediaUrl: m.mediaUrl,
+    mediaMeta: m.mediaMeta,
+    replyToId: m.replyToId,
+    isDeleted: m.isDeleted,
+    createdAt: m.createdAt,
+    updatedAt: m.updatedAt,
+    statuses: m.statuses
+        .map(
+          (s) => MsgStatusRow(
+            userId: s['userId'] as String,
+            status: _parseStatus(s['status']),
+          ),
+        )
+        .toList(),
+  );
 
   static MessageStatus _parseStatus(Object? v) => switch (v) {
-        'READ' => MessageStatus.read,
-        'DELIVERED' => MessageStatus.delivered,
-        _ => MessageStatus.sent,
-      };
+    'READ' => MessageStatus.read,
+    'DELIVERED' => MessageStatus.delivered,
+    _ => MessageStatus.sent,
+  };
 
   static LocalMessage _toLocal(GbMessage m) => LocalMessage(
-        id: m.id,
-        chatId: m.chatId,
-        senderId: m.senderId,
-        type: m.type,
-        text: m.text.isEmpty ? null : m.text,
-        mediaKey: m.mediaKey,
-        mediaUrl: m.mediaUrl,
-        mediaMeta: m.mediaMeta,
-        replyToId: m.replyToId,
-        isDeleted: m.isDeleted,
-        createdAt: m.createdAt,
-        updatedAt: m.updatedAt,
-        statuses: m.statuses
-            .map((s) => {'userId': s.userId, 'status': s.status.name})
-            .toList(),
-      );
+    id: m.id,
+    chatId: m.chatId,
+    senderId: m.senderId,
+    type: m.type,
+    text: m.text.isEmpty ? null : m.text,
+    mediaKey: m.mediaKey,
+    mediaUrl: m.mediaUrl,
+    mediaMeta: m.mediaMeta,
+    replyToId: m.replyToId,
+    isDeleted: m.isDeleted,
+    createdAt: m.createdAt,
+    updatedAt: m.updatedAt,
+    statuses: m.statuses
+        .map((s) => {'userId': s.userId, 'status': s.status.name})
+        .toList(),
+  );
 }

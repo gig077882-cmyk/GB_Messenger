@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -76,9 +76,9 @@ class _GbMessengerAppState extends State<GbMessengerApp> {
   void _navigateToChat(String chatId) {
     final nav = _navKey.currentState;
     if (nav == null) return;
-    nav.push(MaterialPageRoute(
-      builder: (_) => _ChatPlaceholder(chatId: chatId),
-    ));
+    nav.push(
+      MaterialPageRoute(builder: (_) => _ChatPlaceholder(chatId: chatId)),
+    );
   }
 
   @override
@@ -90,7 +90,8 @@ class _GbMessengerAppState extends State<GbMessengerApp> {
       debugShowCheckedModeBanner: false,
       theme: theme.theme.build(),
       navigatorKey: _navKey,
-      builder: (context, child) => _InAppNotificationOverlay(child: child ?? const SizedBox()),
+      builder: (context, child) =>
+          _InAppNotificationOverlay(child: child ?? const SizedBox()),
       home: _home(app),
       onGenerateRoute: _routes,
     );
@@ -143,10 +144,11 @@ class _GbMessengerAppState extends State<GbMessengerApp> {
   }
 
   static Route<dynamic> _page(Widget w) => PageRouteBuilder(
-        pageBuilder: (_, _, _) => w,
-        transitionsBuilder: (_, a, _, child) => FadeTransition(opacity: a, child: child),
-        transitionDuration: const Duration(milliseconds: 200),
-      );
+    pageBuilder: (_, _, _) => w,
+    transitionsBuilder: (_, a, _, child) =>
+        FadeTransition(opacity: a, child: child),
+    transitionDuration: const Duration(milliseconds: 200),
+  );
 }
 
 class _ChatPlaceholder extends StatefulWidget {
@@ -170,9 +172,11 @@ class _ChatPlaceholderState extends State<_ChatPlaceholder> {
       final chat = app.chats.where((c) => c.id == widget.chatId).firstOrNull;
       if (chat != null) {
         if (mounted) {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (_) => ChatScreen(chatId: widget.chatId),
-          ));
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => ChatScreen(chatId: widget.chatId),
+            ),
+          );
         }
         return;
       }
@@ -183,9 +187,7 @@ class _ChatPlaceholderState extends State<_ChatPlaceholder> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
 
@@ -201,7 +203,11 @@ class _Splash extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.chat_bubble_rounded, color: GBTheme.whatsAppGreen, size: 72),
+            Icon(
+              Icons.chat_bubble_rounded,
+              color: GBTheme.whatsAppGreen,
+              size: 72,
+            ),
             SizedBox(height: 20),
             CircularProgressIndicator(color: GBTheme.whatsAppGreen),
           ],
@@ -217,7 +223,8 @@ class _InAppNotificationOverlay extends StatefulWidget {
   const _InAppNotificationOverlay({required this.child});
 
   @override
-  State<_InAppNotificationOverlay> createState() => _InAppNotificationOverlayState();
+  State<_InAppNotificationOverlay> createState() =>
+      _InAppNotificationOverlayState();
 }
 
 class _InAppNotificationOverlayState extends State<_InAppNotificationOverlay> {
@@ -255,7 +262,9 @@ class _InAppNotificationOverlayState extends State<_InAppNotificationOverlay> {
         widget.child,
         if (_current != null)
           Positioned(
-            top: 0, left: 0, right: 0,
+            top: 0,
+            left: 0,
+            right: 0,
             child: SafeArea(
               bottom: false,
               child: NotificationBanner(
@@ -266,9 +275,11 @@ class _InAppNotificationOverlayState extends State<_InAppNotificationOverlay> {
                 onTap: () {
                   final chatId = _current!.chatId;
                   setState(() => _current = null);
-                  _navKey.currentState?.push(MaterialPageRoute(
-                    builder: (_) => _ChatPlaceholder(chatId: chatId),
-                  ));
+                  _navKey.currentState?.push(
+                    MaterialPageRoute(
+                      builder: (_) => _ChatPlaceholder(chatId: chatId),
+                    ),
+                  );
                 },
                 onDismiss: () => setState(() => _current = null),
               ),

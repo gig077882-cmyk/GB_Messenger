@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_state.dart';
@@ -45,7 +45,10 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() => _error = 'Введи имя');
       return;
     }
-    setState(() { _busy = true; _error = null; });
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
     final app = context.read<AppState>();
     try {
       final ok = _step == _Step.register
@@ -95,22 +98,39 @@ class _AuthScreenState extends State<AuthScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 100, height: 100,
+              width: 100,
+              height: 100,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [Color(0xFF25D366), Color(0xFF128C7E)]),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF25D366), Color(0xFF128C7E)],
+                ),
                 borderRadius: BorderRadius.circular(26),
                 boxShadow: softShadow(opacity: 0.15),
               ),
-              child: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 54),
+              child: const Icon(
+                Icons.chat_bubble_rounded,
+                color: Colors.white,
+                size: 54,
+              ),
             ),
             const SizedBox(height: 28),
-            const Text('GB Messenger',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: GBTheme.whatsAppDark)),
+            const Text(
+              'GB Messenger',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: GBTheme.whatsAppDark,
+              ),
+            ),
             const SizedBox(height: 10),
             const Text(
               'Быстрые сообщения, звонки, статусы.\nБезопасно и удобно.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: GBTheme.textSecondary, fontSize: 15, height: 1.4),
+              style: TextStyle(
+                color: GBTheme.textSecondary,
+                fontSize: 15,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 40),
             NeonButton(
@@ -121,8 +141,10 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => setState(() => _step = _Step.login),
-              child: const Text('Уже есть аккаунт? Войти',
-                  style: TextStyle(color: GBTheme.whatsAppGreen)),
+              child: const Text(
+                'Уже есть аккаунт? Войти',
+                style: TextStyle(color: GBTheme.whatsAppGreen),
+              ),
             ),
           ],
         ),
@@ -138,10 +160,19 @@ class _AuthScreenState extends State<AuthScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 24),
-          Text(title, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: GBTheme.whatsAppDark)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: GBTheme.whatsAppDark,
+            ),
+          ),
           const SizedBox(height: 8),
-          const Text('Синхронизируйся с контактами и историей',
-              style: TextStyle(color: GBTheme.textSecondary)),
+          const Text(
+            'Синхронизируйся с контактами и историей',
+            style: TextStyle(color: GBTheme.textSecondary),
+          ),
           const SizedBox(height: 32),
           if (_step == _Step.register) ...[
             TextField(
@@ -163,7 +194,9 @@ class _AuthScreenState extends State<AuthScreen> {
             controller: _phone,
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(hintText: 'Номер телефона (+7...)'),
+            decoration: const InputDecoration(
+              hintText: 'Номер телефона (+7...)',
+            ),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -173,18 +206,27 @@ class _AuthScreenState extends State<AuthScreen> {
             decoration: InputDecoration(
               hintText: 'Пароль',
               suffixIcon: IconButton(
-                icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility,
-                    color: GBTheme.textSecondary),
+                icon: Icon(
+                  _obscure ? Icons.visibility_off : Icons.visibility,
+                  color: GBTheme.textSecondary,
+                ),
                 onPressed: () => setState(() => _obscure = !_obscure),
               ),
             ),
           ),
           if (_error != null) ...[
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+            Text(
+              _error!,
+              style: const TextStyle(color: Colors.red, fontSize: 13),
+            ),
           ],
           const SizedBox(height: 28),
-          NeonButton(label: title, onPressed: _busy ? null : _submit, loading: _busy),
+          NeonButton(
+            label: title,
+            onPressed: _busy ? null : _submit,
+            loading: _busy,
+          ),
           const SizedBox(height: 12),
           TextButton(
             onPressed: _busy
@@ -195,9 +237,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       _error = null;
                     });
                   },
-            child: Text(registerLink
-                ? 'Уже есть аккаунт? Войти'
-                : 'Нет аккаунта? Зарегистрироваться'),
+            child: Text(
+              registerLink
+                  ? 'Уже есть аккаунт? Войти'
+                  : 'Нет аккаунта? Зарегистрироваться',
+            ),
           ),
         ],
       ),

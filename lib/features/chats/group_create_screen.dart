@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +46,11 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
       try {
         final r = await _api.searchUsers(q.trim());
         if (mounted) {
-          setState(() => _results = r.where((u) => !_selected.any((s) => s.id == u.id)).toList());
+          setState(
+            () => _results = r
+                .where((u) => !_selected.any((s) => s.id == u.id))
+                .toList(),
+          );
         }
       } catch (_) {
       } finally {
@@ -62,18 +66,24 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
       } else {
         _selected.add(u);
       }
-      _results = _results.where((r) => !_selected.any((s) => s.id == r.id)).toList();
+      _results = _results
+          .where((r) => !_selected.any((s) => s.id == r.id))
+          .toList();
     });
   }
 
   Future<void> _create() async {
     final name = _name.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Введите название группы')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Введите название группы')));
       return;
     }
     if (_selected.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Добавьте хотя бы одного участника')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Добавьте хотя бы одного участника')),
+      );
       return;
     }
     setState(() => _creating = true);
@@ -81,12 +91,15 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final chat = await _api.createGroup(name, _selected.map((u) => u.id).toList());
+      final chat = await _api.createGroup(
+        name,
+        _selected.map((u) => u.id).toList(),
+      );
       await appState.refreshChats();
       if (!context.mounted) return;
-      navigator.pushReplacement(MaterialPageRoute(
-        builder: (_) => ChatScreen(chatId: chat.id),
-      ));
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (_) => ChatScreen(chatId: chat.id)),
+      );
     } catch (e) {
       if (context.mounted) {
         setState(() => _creating = false);
@@ -106,11 +119,12 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             child: _creating
                 ? const Padding(
                     padding: EdgeInsets.all(12),
-                    child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                : NeonButton(
-                    label: 'Создать',
-                    onPressed: _create,
-                  ),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      color: Colors.white,
+                    ),
+                  )
+                : NeonButton(label: 'Создать', onPressed: _create),
           ),
         ],
       ),
@@ -139,12 +153,24 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                         onTap: () => _toggle(u),
                         child: Stack(
                           children: [
-                            GBAvatar(url: u.avatarUrl, name: u.displayName, size: 48),
+                            GBAvatar(
+                              url: u.avatarUrl,
+                              name: u.displayName,
+                              size: 48,
+                            ),
                             Positioned(
-                              right: -3, top: -3,
+                              right: -3,
+                              top: -3,
                               child: Container(
-                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                                child: const Icon(Icons.close, size: 16, color: Colors.red),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 16,
+                                  color: Colors.red,
+                                ),
                               ),
                             ),
                           ],
@@ -153,8 +179,12 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       const SizedBox(height: 4),
                       SizedBox(
                         width: 54,
-                        child: Text(u.displayName, maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 10)),
+                        child: Text(
+                          u.displayName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 10),
+                        ),
                       ),
                     ],
                   );
@@ -176,21 +206,29 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _results.isEmpty
-                    ? const EmptyState(
-                        icon: Icons.person_add_alt_1_outlined,
-                        title: 'Найди участников')
-                    : ListView.builder(
-                        itemCount: _results.length,
-                        itemBuilder: (_, i) {
-                          final u = _results[i];
-                          return ListTile(
-                            leading: GBAvatar(url: u.avatarUrl, name: u.displayName, size: 44),
-                            title: Text(u.displayName),
-                            trailing: const Icon(Icons.add_circle_outline, color: GBTheme.whatsAppGreen),
-                            onTap: () => _toggle(u),
-                          );
-                        },
-                      ),
+                ? const EmptyState(
+                    icon: Icons.person_add_alt_1_outlined,
+                    title: 'Найди участников',
+                  )
+                : ListView.builder(
+                    itemCount: _results.length,
+                    itemBuilder: (_, i) {
+                      final u = _results[i];
+                      return ListTile(
+                        leading: GBAvatar(
+                          url: u.avatarUrl,
+                          name: u.displayName,
+                          size: 44,
+                        ),
+                        title: Text(u.displayName),
+                        trailing: const Icon(
+                          Icons.add_circle_outline,
+                          color: GBTheme.whatsAppGreen,
+                        ),
+                        onTap: () => _toggle(u),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

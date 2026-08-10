@@ -84,10 +84,7 @@ export class UsersController {
   }
 
   @Patch('me/privacy')
-  updatePrivacy(
-    @CurrentUser() user: AuthUser,
-    @Body() dto: UpdatePrivacyDto,
-  ) {
+  updatePrivacy(@CurrentUser() user: AuthUser, @Body() dto: UpdatePrivacyDto) {
     return this.usersService.updatePrivacy(user.id, dto);
   }
 }

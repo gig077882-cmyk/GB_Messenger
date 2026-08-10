@@ -5,17 +5,25 @@ class FormattingToolbar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onChanged;
 
-  const FormattingToolbar({super.key, required this.controller, required this.onChanged});
+  const FormattingToolbar({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+  });
 
   void _wrap(String left, String right) {
     final text = controller.text;
     final selection = controller.selection;
     final start = selection.start;
     final end = selection.end;
-    final selected = start >= 0 && end >= 0 && start != end ? text.substring(start, end) : '';
+    final selected = start >= 0 && end >= 0 && start != end
+        ? text.substring(start, end)
+        : '';
     final newText = text.replaceRange(start, end, '$left$selected$right');
     controller.text = newText;
-    controller.selection = TextSelection.collapsed(offset: start + left.length + selected.length);
+    controller.selection = TextSelection.collapsed(
+      offset: start + left.length + selected.length,
+    );
     onChanged();
   }
 
@@ -28,7 +36,11 @@ class FormattingToolbar extends StatelessWidget {
         children: [
           _btn(Icons.format_bold, 'Жирный', () => _wrap('**', '**')),
           _btn(Icons.format_italic, 'Курсив', () => _wrap('_', '_')),
-          _btn(Icons.format_strikethrough, 'Зачёркнутый', () => _wrap('~~', '~~')),
+          _btn(
+            Icons.format_strikethrough,
+            'Зачёркнутый',
+            () => _wrap('~~', '~~'),
+          ),
           _btn(Icons.code, 'Моно', () => _wrap('`', '`')),
           const Spacer(),
         ],

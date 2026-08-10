@@ -51,18 +51,33 @@ class NotificationBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(title,
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: GBTheme.textPrimary)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: GBTheme.textPrimary,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(body,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: GBTheme.textSecondary, fontSize: 13)),
+                    Text(
+                      body,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: GBTheme.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close, size: 18, color: GBTheme.textSecondary),
+                icon: const Icon(
+                  Icons.close,
+                  size: 18,
+                  color: GBTheme.textSecondary,
+                ),
                 onPressed: onDismiss,
               ),
             ],

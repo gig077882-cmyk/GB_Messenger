@@ -70,37 +70,45 @@ class SocketClient {
       ..on('message:update', (d) => _mcUpd.add(GbMessage.fromJson(_asMap(d))))
       ..on('messages:delivered', (d) {
         final m = _asMap(d);
-        _delivered.add(DeliveredEvent(
-          chatId: m['chatId'] as String,
-          messageIds: (m['messageIds'] as List).whereType<String>().toList(),
-          userIds: (m['userIds'] as List).whereType<String>().toList(),
-        ));
+        _delivered.add(
+          DeliveredEvent(
+            chatId: m['chatId'] as String,
+            messageIds: (m['messageIds'] as List).whereType<String>().toList(),
+            userIds: (m['userIds'] as List).whereType<String>().toList(),
+          ),
+        );
       })
       ..on('read:receipts', (d) {
         final m = _asMap(d);
-        _read.add(ReadEvent(
-          chatId: m['chatId'] as String,
-          messageIds: (m['messageIds'] as List).whereType<String>().toList(),
-          userId: m['userId'] as String?,
-        ));
+        _read.add(
+          ReadEvent(
+            chatId: m['chatId'] as String,
+            messageIds: (m['messageIds'] as List).whereType<String>().toList(),
+            userId: m['userId'] as String?,
+          ),
+        );
       })
       ..on('typing', (d) {
         final m = _asMap(d);
-        _typing.add(TypingEvent(
-          chatId: m['chatId'] as String,
-          userId: m['userId'] as String,
-          isTyping: m['isTyping'] == true,
-        ));
+        _typing.add(
+          TypingEvent(
+            chatId: m['chatId'] as String,
+            userId: m['userId'] as String,
+            isTyping: m['isTyping'] == true,
+          ),
+        );
       })
       ..on('presence:update', (d) {
         final m = _asMap(d);
-        _presence.add(PresenceEvent(
-          userId: m['userId'] as String,
-          isOnline: m['isOnline'] == true,
-          lastSeenAt: m['lastSeenAt'] != null
-              ? DateTime.tryParse(m['lastSeenAt'].toString())
-              : null,
-        ));
+        _presence.add(
+          PresenceEvent(
+            userId: m['userId'] as String,
+            isOnline: m['isOnline'] == true,
+            lastSeenAt: m['lastSeenAt'] != null
+                ? DateTime.tryParse(m['lastSeenAt'].toString())
+                : null,
+          ),
+        );
       })
       ..on('call:invite', (d) {
         final m = _asMap(d);
@@ -108,12 +116,14 @@ class SocketClient {
             ? GbUser.fromJson(m['caller'] as Map<String, dynamic>)
             : null;
         if (caller == null) return;
-        _call.add(IncomingCall(
-          callId: (m['callId'] ?? '') as String,
-          chatId: (m['chatId'] ?? '') as String,
-          type: (m['type'] ?? 'AUDIO') as String,
-          caller: caller,
-        ));
+        _call.add(
+          IncomingCall(
+            callId: (m['callId'] ?? '') as String,
+            chatId: (m['chatId'] ?? '') as String,
+            type: (m['type'] ?? 'AUDIO') as String,
+            caller: caller,
+          ),
+        );
       })
       ..on('call:end', (d) {
         final m = _asMap(d);
@@ -127,37 +137,44 @@ class SocketClient {
       ..on('status:new', (d) => _statusNew.add(GbStatus.fromJson(_asMap(d))))
       ..on('message:reaction', (d) {
         final m = _asMap(d);
-        _reaction.add(ReactionEvent(
-          chatId: (m['chatId'] ?? '') as String,
-          messageId: (m['messageId'] ?? '') as String,
-          userId: (m['userId'] ?? '') as String,
-          emoji: m['emoji'] as String?,
-          action: (m['action'] ?? 'added') as String,
-        ));
+        _reaction.add(
+          ReactionEvent(
+            chatId: (m['chatId'] ?? '') as String,
+            messageId: (m['messageId'] ?? '') as String,
+            userId: (m['userId'] ?? '') as String,
+            emoji: m['emoji'] as String?,
+            action: (m['action'] ?? 'added') as String,
+          ),
+        );
       })
       ..connect();
   }
 
   void _member(String kind, dynamic d) {
     final m = _asMap(d);
-    _chatMember.add(ChatMemberEvent(
-      kind: kind,
-      chatId: (m['chatId'] ?? '') as String,
-      userId: (m['userId'] ?? '') as String,
-      isAdmin: m['isAdmin'] == true,
-    ));
+    _chatMember.add(
+      ChatMemberEvent(
+        kind: kind,
+        chatId: (m['chatId'] ?? '') as String,
+        userId: (m['userId'] ?? '') as String,
+        isAdmin: m['isAdmin'] == true,
+      ),
+    );
   }
 
   void emitTyping(String chatId, bool isTyping) =>
       _socket?.emit('typing', {'chatId': chatId, 'isTyping': isTyping});
 
-  void emitRead(String chatId, List<String> messageIds) =>
-      _socket?.emit('messages:read', {'chatId': chatId, 'messageIds': messageIds});
+  void emitRead(String chatId, List<String> messageIds) => _socket?.emit(
+    'messages:read',
+    {'chatId': chatId, 'messageIds': messageIds},
+  );
 
   void emitCallInvite(String chatId, String type) =>
       _socket?.emit('call:invite', {'chatId': chatId, 'type': type});
 
-  void emitCallEnd(String callId) => _socket?.emit('call:end', {'callId': callId});
+  void emitCallEnd(String callId) =>
+      _socket?.emit('call:end', {'callId': callId});
 
   void emitPresenceGet(List<String> userIds) =>
       _socket?.emit('presence:get', {'userIds': userIds});
@@ -177,28 +194,44 @@ class DeliveredEvent {
   final String chatId;
   final List<String> messageIds;
   final List<String> userIds;
-  const DeliveredEvent({required this.chatId, required this.messageIds, required this.userIds});
+  const DeliveredEvent({
+    required this.chatId,
+    required this.messageIds,
+    required this.userIds,
+  });
 }
 
 class ReadEvent {
   final String chatId;
   final List<String> messageIds;
   final String? userId;
-  const ReadEvent({required this.chatId, required this.messageIds, this.userId});
+  const ReadEvent({
+    required this.chatId,
+    required this.messageIds,
+    this.userId,
+  });
 }
 
 class TypingEvent {
   final String chatId;
   final String userId;
   final bool isTyping;
-  const TypingEvent({required this.chatId, required this.userId, required this.isTyping});
+  const TypingEvent({
+    required this.chatId,
+    required this.userId,
+    required this.isTyping,
+  });
 }
 
 class PresenceEvent {
   final String userId;
   final bool isOnline;
   final DateTime? lastSeenAt;
-  const PresenceEvent({required this.userId, required this.isOnline, this.lastSeenAt});
+  const PresenceEvent({
+    required this.userId,
+    required this.isOnline,
+    this.lastSeenAt,
+  });
 }
 
 class ChatMemberEvent {
@@ -206,7 +239,12 @@ class ChatMemberEvent {
   final String chatId;
   final String userId;
   final bool isAdmin;
-  const ChatMemberEvent({required this.kind, required this.chatId, required this.userId, this.isAdmin = false});
+  const ChatMemberEvent({
+    required this.kind,
+    required this.chatId,
+    required this.userId,
+    this.isAdmin = false,
+  });
 }
 
 class ReactionEvent {
@@ -215,5 +253,11 @@ class ReactionEvent {
   final String userId;
   final String? emoji;
   final String action; // added | removed
-  const ReactionEvent({required this.chatId, required this.messageId, required this.userId, this.emoji, required this.action});
+  const ReactionEvent({
+    required this.chatId,
+    required this.messageId,
+    required this.userId,
+    this.emoji,
+    required this.action,
+  });
 }

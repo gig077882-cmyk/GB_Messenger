@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -53,9 +53,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
     final chat = await _api.createDirect(u.id);
     await app.refreshChats();
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (_) => ChatScreen(chatId: chat.id),
-    ));
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => ChatScreen(chatId: chat.id)),
+    );
   }
 
   @override
@@ -88,22 +88,27 @@ class _NewChatScreenState extends State<NewChatScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _results.isEmpty
-                    ? const EmptyState(
-                        icon: Icons.person_search_outlined,
-                        title: 'Найди собеседника',
-                        subtitle: 'Введи минимум 2 символа')
-                    : ListView.builder(
-                        itemCount: _results.length,
-                        itemBuilder: (_, i) {
-                          final u = _results[i];
-                          return ListTile(
-                            leading: GBAvatar(url: u.avatarUrl, name: u.displayName, size: 44),
-                            title: Text(u.displayName),
-                            subtitle: Text(u.email),
-                            onTap: () => _openChat(u),
-                          );
-                        },
-                      ),
+                ? const EmptyState(
+                    icon: Icons.person_search_outlined,
+                    title: 'Найди собеседника',
+                    subtitle: 'Введи минимум 2 символа',
+                  )
+                : ListView.builder(
+                    itemCount: _results.length,
+                    itemBuilder: (_, i) {
+                      final u = _results[i];
+                      return ListTile(
+                        leading: GBAvatar(
+                          url: u.avatarUrl,
+                          name: u.displayName,
+                          size: 44,
+                        ),
+                        title: Text(u.displayName),
+                        subtitle: Text(u.email),
+                        onTap: () => _openChat(u),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

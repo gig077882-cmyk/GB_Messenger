@@ -29,7 +29,10 @@ class VoiceRecorder {
   Future<void> start() async {
     if (!await hasPermission()) return;
     final dir = await getTemporaryDirectory();
-    _currentPath = p.join(dir.path, 'voice_${DateTime.now().millisecondsSinceEpoch}.m4a');
+    _currentPath = p.join(
+      dir.path,
+      'voice_${DateTime.now().millisecondsSinceEpoch}.m4a',
+    );
     _startTime = DateTime.now();
     try {
       await _recorder.start(
@@ -51,7 +54,11 @@ class VoiceRecorder {
     _startTime = null;
     final file = File(path);
     final size = await file.length();
-    return VoiceResult(path: path, durationMs: duration.inMilliseconds, size: size);
+    return VoiceResult(
+      path: path,
+      durationMs: duration.inMilliseconds,
+      size: size,
+    );
   }
 
   Future<void> cancel() async {
@@ -77,7 +84,11 @@ class VoiceResult {
   final String path;
   final int durationMs;
   final int size;
-  VoiceResult({required this.path, required this.durationMs, required this.size});
+  VoiceResult({
+    required this.path,
+    required this.durationMs,
+    required this.size,
+  });
 }
 
 /// Плеер для воспроизведения голосовых сообщений.
@@ -105,14 +116,18 @@ class VoicePlayer {
     }
     await stop();
     _currentSource = url;
-    final source = url.startsWith('http') ? UrlSource(url) : DeviceFileSource(url);
+    final source = url.startsWith('http')
+        ? UrlSource(url)
+        : DeviceFileSource(url);
     await _player.play(source);
     _onPositionController.add(PlayerStateData(url: url, isPlaying: true));
   }
 
   Future<void> pause() async {
     await _player.pause();
-    _onPositionController.add(PlayerStateData(url: _currentSource ?? '', isPlaying: false));
+    _onPositionController.add(
+      PlayerStateData(url: _currentSource ?? '', isPlaying: false),
+    );
   }
 
   Future<void> stop() async {
@@ -133,5 +148,10 @@ class PlayerStateData {
   final bool isPlaying;
   final Duration? position;
   final Duration? duration;
-  PlayerStateData({required this.url, required this.isPlaying, this.position, this.duration});
+  PlayerStateData({
+    required this.url,
+    required this.isPlaying,
+    this.position,
+    this.duration,
+  });
 }

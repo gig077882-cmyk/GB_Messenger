@@ -36,14 +36,14 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
     });
 
     final service = UpdateService();
-    final path = await service.downloadApk(
-      widget.release.downloadUrl,
-      (received, total) {
-        if (total > 0 && mounted) {
-          setState(() => _progress = received / total);
-        }
-      },
-    );
+    final path = await service.downloadApk(widget.release.downloadUrl, (
+      received,
+      total,
+    ) {
+      if (total > 0 && mounted) {
+        setState(() => _progress = received / total);
+      }
+    });
 
     if (path == null) {
       setState(() {
@@ -99,10 +99,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                 Text(
                   'Для продолжения работы необходимо установить обновление v${widget.release.version}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white60,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.white60),
                 ),
                 const SizedBox(height: 32),
                 if (_error != null) ...[
@@ -123,7 +120,9 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                   LinearProgressIndicator(
                     value: _progress,
                     backgroundColor: Colors.white12,
-                    valueColor: const AlwaysStoppedAnimation(GBTheme.whatsAppGreen),
+                    valueColor: const AlwaysStoppedAnimation(
+                      GBTheme.whatsAppGreen,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(

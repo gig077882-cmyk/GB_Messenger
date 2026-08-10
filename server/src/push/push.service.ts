@@ -52,7 +52,8 @@ export class PushService {
     preview: string;
     recipientIds: string[];
   }): Promise<void> {
-    if (!this.enabled || !this.prisma || input.recipientIds.length === 0) return;
+    if (!this.enabled || !this.prisma || input.recipientIds.length === 0)
+      return;
 
     try {
       const rows = await this.prisma.pushToken.findMany({

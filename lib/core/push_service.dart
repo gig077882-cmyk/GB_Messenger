@@ -22,11 +22,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Кэшируем факт нового сообщения, чтобы при тапе история уже была.
   try {
     final db = LocalDatabase.instance;
-    await db.updateChatMeta(
-      chatId,
-      DateTime.now(),
-      1,
-    );
+    await db.updateChatMeta(chatId, DateTime.now(), 1);
   } catch (_) {}
 }
 
@@ -57,7 +53,9 @@ class PushService {
     }
 
     try {
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
 
       final settings = await _messaging!.requestPermission(
         alert: true,
@@ -109,8 +107,9 @@ class PushService {
 
   Future<void> _registerWithServer(String token) async {
     try {
-      final platform =
-          defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android';
+      final platform = defaultTargetPlatform == TargetPlatform.iOS
+          ? 'ios'
+          : 'android';
       await ApiService.instance.registerPushToken(
         token: token,
         platform: platform,
@@ -125,12 +124,14 @@ class PushService {
     final chatId = data['chatId'] as String?;
     if (chatId == null) return;
     debugPrint('[push] foreground message: chatId=$chatId');
-    _inAppController.add(InAppNotification(
-      chatId: chatId,
-      senderName: data['senderName'] as String? ?? '',
-      body: message.notification?.body ?? data['preview'] as String? ?? '',
-      avatarUrl: data['avatarUrl'] as String?,
-    ));
+    _inAppController.add(
+      InAppNotification(
+        chatId: chatId,
+        senderName: data['senderName'] as String? ?? '',
+        body: message.notification?.body ?? data['preview'] as String? ?? '',
+        avatarUrl: data['avatarUrl'] as String?,
+      ),
+    );
     onForegroundMessage?.call(
       chatId,
       data['senderName'] as String? ?? '',
@@ -153,7 +154,7 @@ class PushService {
 
   /// Called when a message arrives in foreground (app open).
   void Function(String chatId, String senderName, String body)?
-      onForegroundMessage;
+  onForegroundMessage;
 
   void dispose() {
     _inAppController.close();

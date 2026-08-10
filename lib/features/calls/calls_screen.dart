@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/api_service.dart';
@@ -30,7 +30,10 @@ class _CallsScreenState extends State<CallsScreen> {
     try {
       final r = await _api.callLogs();
       if (mounted) {
-        setState(() { _logs = r; _loading = false; });
+        setState(() {
+          _logs = r;
+          _loading = false;
+        });
       }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
@@ -47,52 +50,63 @@ class _CallsScreenState extends State<CallsScreen> {
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : _logs.isEmpty
-              ? const EmptyState(
-                  icon: Icons.call_outlined,
-                  title: 'РќРµС‚ Р·РІРѕРЅРєРѕРІ',
-                  subtitle: 'РСЃС‚РѕСЂРёСЏ Р·РІРѕРЅРєРѕРІ РїРѕСЏРІРёС‚СЃСЏ Р·РґРµСЃСЊ')
-              : ListView.separated(
-                  itemCount: _logs.length,
-                  separatorBuilder: (_, _) => Divider(
-                    height: 1, indent: 76, endIndent: 16, color: theme.theme.stroke,
+          ? const EmptyState(
+              icon: Icons.call_outlined,
+              title: 'РќРµС‚ Р·РІРѕРЅРєРѕРІ',
+              subtitle:
+                  'РСЃС‚РѕСЂРёСЏ Р·РІРѕРЅРєРѕРІ РїРѕСЏРІРёС‚СЃСЏ Р·РґРµСЃСЊ',
+            )
+          : ListView.separated(
+              itemCount: _logs.length,
+              separatorBuilder: (_, _) => Divider(
+                height: 1,
+                indent: 76,
+                endIndent: 16,
+                color: theme.theme.stroke,
+              ),
+              itemBuilder: (_, i) {
+                final l = _logs[i];
+                return ListTile(
+                  leading: CircleAvatar(
+                    radius: 26,
+                    backgroundColor: GBTheme.whatsAppGreen.withValues(
+                      alpha: 0.15,
+                    ),
+                    child: Icon(
+                      l.kind == 'VIDEO' ? Icons.videocam : Icons.phone,
+                      color: GBTheme.whatsAppGreen,
+                    ),
                   ),
-                  itemBuilder: (_, i) {
-                    final l = _logs[i];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 26,
-                        backgroundColor: GBTheme.whatsAppGreen.withValues(alpha: 0.15),
-                        child: Icon(
-                          l.kind == 'VIDEO' ? Icons.videocam : Icons.phone,
-                          color: GBTheme.whatsAppGreen,
-                        ),
-                      ),
-                      title: Text(
-                        l.callerId == app.myId ? 'РСЃС…РѕРґСЏС‰РёР№' : 'Р’С…РѕРґСЏС‰РёР№',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: l.status == 'missed' ? Colors.red : theme.theme.textMain,
-                        ),
-                      ),
-                      subtitle: Text(
-                        '${_statusLabel(l.status)} В· ${shortDate(l.startedAt)}',
-                        style: TextStyle(fontSize: 13, color: theme.theme.textHint),
-                      ),
-                      trailing: Icon(
-                        l.kind == 'VIDEO' ? Icons.videocam : Icons.phone,
-                        color: GBTheme.whatsAppGreen,
-                      ),
-                    );
-                  },
-                ),
+                  title: Text(
+                    l.callerId == app.myId
+                        ? 'РСЃС…РѕРґСЏС‰РёР№'
+                        : 'Р’С…РѕРґСЏС‰РёР№',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: l.status == 'missed'
+                          ? Colors.red
+                          : theme.theme.textMain,
+                    ),
+                  ),
+                  subtitle: Text(
+                    '${_statusLabel(l.status)} В· ${shortDate(l.startedAt)}',
+                    style: TextStyle(fontSize: 13, color: theme.theme.textHint),
+                  ),
+                  trailing: Icon(
+                    l.kind == 'VIDEO' ? Icons.videocam : Icons.phone,
+                    color: GBTheme.whatsAppGreen,
+                  ),
+                );
+              },
+            ),
     );
   }
 
   String _statusLabel(String s) => switch (s) {
-        'completed' => 'Р—Р°РІРµСЂС€С‘РЅ',
-        'missed' => 'РџСЂРѕРїСѓС‰РµРЅ',
-        'rejected' => 'РћС‚РєР»РѕРЅС‘РЅ',
-        'cancelled' => 'РћС‚РјРµРЅС‘РЅ',
-        _ => s,
-      };
+    'completed' => 'Р—Р°РІРµСЂС€С‘РЅ',
+    'missed' => 'РџСЂРѕРїСѓС‰РµРЅ',
+    'rejected' => 'РћС‚РєР»РѕРЅС‘РЅ',
+    'cancelled' => 'РћС‚РјРµРЅС‘РЅ',
+    _ => s,
+  };
 }

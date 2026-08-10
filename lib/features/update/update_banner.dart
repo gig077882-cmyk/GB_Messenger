@@ -33,14 +33,14 @@ class _UpdateBannerState extends State<UpdateBanner> {
     });
 
     final service = UpdateService();
-    final path = await service.downloadApk(
-      widget.release.downloadUrl,
-      (received, total) {
-        if (total > 0 && mounted) {
-          setState(() => _progress = received / total);
-        }
-      },
-    );
+    final path = await service.downloadApk(widget.release.downloadUrl, (
+      received,
+      total,
+    ) {
+      if (total > 0 && mounted) {
+        setState(() => _progress = received / total);
+      }
+    });
 
     if (path != null && mounted) {
       await service.installApk(path);

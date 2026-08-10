@@ -14,7 +14,11 @@ class ThemeProvider extends ChangeNotifier {
 
 /// Удобный доступ к теме.
 class ThemeScope extends InheritedNotifier<ThemeProvider> {
-  const ThemeScope({super.key, required ThemeProvider super.notifier, required super.child});
+  const ThemeScope({
+    super.key,
+    required ThemeProvider super.notifier,
+    required super.child,
+  });
 
   static ThemeProvider of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<ThemeScope>();

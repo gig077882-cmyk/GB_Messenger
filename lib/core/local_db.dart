@@ -36,7 +36,8 @@ class LocalDatabase {
             statuses TEXT NOT NULL DEFAULT '[]'
           )''');
         await db.execute(
-            'CREATE INDEX idx_messages_chat ON messages(chat_id, created_at)');
+          'CREATE INDEX idx_messages_chat ON messages(chat_id, created_at)',
+        );
         await db.execute('''
           CREATE TABLE pending_messages (
             local_id TEXT PRIMARY KEY,
@@ -84,9 +85,7 @@ class LocalDatabase {
     final db = await this.db;
     final rows = await db.query(
       'messages',
-      where: before != null
-          ? 'chat_id = ? AND created_at < ?'
-          : 'chat_id = ?',
+      where: before != null ? 'chat_id = ? AND created_at < ?' : 'chat_id = ?',
       whereArgs: before != null ? [chatId, before] : [chatId],
       orderBy: 'created_at DESC',
       limit: limit,
@@ -107,7 +106,12 @@ class LocalDatabase {
 
   Future<LocalMessage?> findMessageById(String id) async {
     final db = await this.db;
-    final rows = await db.query('messages', where: 'id = ?', whereArgs: [id], limit: 1);
+    final rows = await db.query(
+      'messages',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
     if (rows.isEmpty) return null;
     return LocalMessage.fromRow(rows.first);
   }
@@ -117,8 +121,11 @@ class LocalDatabase {
     final db = await this.db;
     final row = m.toRow();
     row['local_id'] = row.remove('id');
-    await db.insert('pending_messages', row,
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'pending_messages',
+      row,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<LocalMessage>> pendingMessages() async {
@@ -133,7 +140,11 @@ class LocalDatabase {
 
   Future<void> markPendingSent(String localId, String serverId) async {
     final db = await this.db;
-    await db.delete('pending_messages', where: 'local_id = ?', whereArgs: [localId]);
+    await db.delete(
+      'pending_messages',
+      where: 'local_id = ?',
+      whereArgs: [localId],
+    );
   }
 
   Future<void> incrementPendingAttempt(String localId, String error) async {
@@ -161,8 +172,11 @@ class LocalDatabase {
     int unreadDelta,
   ) async {
     final db = await this.db;
-    final existing = await db.query('chats_meta',
-        where: 'chat_id = ?', whereArgs: [chatId]);
+    final existing = await db.query(
+      'chats_meta',
+      where: 'chat_id = ?',
+      whereArgs: [chatId],
+    );
     if (existing.isEmpty) {
       await db.insert('chats_meta', {
         'chat_id': chatId,

@@ -27,18 +27,18 @@ class GbUser {
   });
 
   factory GbUser.fromJson(Map<String, dynamic> j) => GbUser(
-        id: j['id'] as String,
-        email: (j['email'] ?? '') as String,
-        displayName: (j['displayName'] ?? '') as String,
-        username: (j['username'] ?? '') as String,
-        bio: j['bio'] as String?,
-        phone: j['phone'] as String?,
-        avatarKey: j['avatarKey'] as String?,
-        avatarUrl: j['avatarUrl'] as String?,
-        isOnline: j['isOnline'] == true,
-        lastSeenAt: _dt(j['lastSeenAt']),
-        wallpaperUrl: j['wallpaperUrl'] as String?,
-      );
+    id: j['id'] as String,
+    email: (j['email'] ?? '') as String,
+    displayName: (j['displayName'] ?? '') as String,
+    username: (j['username'] ?? '') as String,
+    bio: j['bio'] as String?,
+    phone: j['phone'] as String?,
+    avatarKey: j['avatarKey'] as String?,
+    avatarUrl: j['avatarUrl'] as String?,
+    isOnline: j['isOnline'] == true,
+    lastSeenAt: _dt(j['lastSeenAt']),
+    wallpaperUrl: j['wallpaperUrl'] as String?,
+  );
 }
 
 class ChatMember {
@@ -46,7 +46,11 @@ class ChatMember {
   final String role;
   final GbUser user;
 
-  const ChatMember({required this.userId, required this.role, required this.user});
+  const ChatMember({
+    required this.userId,
+    required this.role,
+    required this.user,
+  });
 
   factory ChatMember.fromJson(Map<String, dynamic> j) {
     final userJson = j['user'];
@@ -96,24 +100,24 @@ class GbChat {
   });
 
   factory GbChat.fromJson(Map<String, dynamic> j) => GbChat(
-        id: j['id'] as String,
-        type: (j['type'] ?? 'DIRECT') as String,
-        name: j['name'] as String?,
-        avatarUrl: j['avatarUrl'] as String?,
-        wallpaperUrl: j['wallpaperUrl'] as String?,
-        createdAt: _dt(j['createdAt']) ?? DateTime.now(),
-        lastMessage: j['lastMessage'] != null
-            ? GbMessage.fromJson(j['lastMessage'] as Map<String, dynamic>)
-            : null,
-        lastMessageAt: _dt(j['lastMessageAt']),
-        unreadCount: (j['unreadCount'] ?? 0) as int,
-        isMuted: j['isMuted'] == true,
-        iAmAdmin: j['iAmAdmin'] == true,
-        members: ((j['members'] ?? const []) as List)
-            .whereType<Map<String, dynamic>>()
-            .map(ChatMember.fromJson)
-            .toList(),
-      );
+    id: j['id'] as String,
+    type: (j['type'] ?? 'DIRECT') as String,
+    name: j['name'] as String?,
+    avatarUrl: j['avatarUrl'] as String?,
+    wallpaperUrl: j['wallpaperUrl'] as String?,
+    createdAt: _dt(j['createdAt']) ?? DateTime.now(),
+    lastMessage: j['lastMessage'] != null
+        ? GbMessage.fromJson(j['lastMessage'] as Map<String, dynamic>)
+        : null,
+    lastMessageAt: _dt(j['lastMessageAt']),
+    unreadCount: (j['unreadCount'] ?? 0) as int,
+    isMuted: j['isMuted'] == true,
+    iAmAdmin: j['iAmAdmin'] == true,
+    members: ((j['members'] ?? const []) as List)
+        .whereType<Map<String, dynamic>>()
+        .map(ChatMember.fromJson)
+        .toList(),
+  );
 
   /// Собеседник в direct-чате (не я).
   GbUser? peer(String myId) {
@@ -138,14 +142,14 @@ class MsgStatusRow {
   const MsgStatusRow({required this.userId, required this.status});
 
   factory MsgStatusRow.fromJson(Map<String, dynamic> j) => MsgStatusRow(
-        userId: j['userId'] as String,
-        status: switch (j['status']) {
-          'SENT' => MessageStatus.sent,
-          'DELIVERED' => MessageStatus.delivered,
-          'READ' => MessageStatus.read,
-          _ => MessageStatus.sent,
-        },
-      );
+    userId: j['userId'] as String,
+    status: switch (j['status']) {
+      'SENT' => MessageStatus.sent,
+      'DELIVERED' => MessageStatus.delivered,
+      'READ' => MessageStatus.read,
+      _ => MessageStatus.sent,
+    },
+  );
 }
 
 class MessageReaction {
@@ -155,9 +159,9 @@ class MessageReaction {
   const MessageReaction({required this.userId, required this.emoji});
 
   factory MessageReaction.fromJson(Map<String, dynamic> j) => MessageReaction(
-        userId: j['userId'] as String,
-        emoji: j['emoji'] as String,
-      );
+    userId: j['userId'] as String,
+    emoji: j['emoji'] as String,
+  );
 }
 
 class GbMessage {
@@ -207,56 +211,57 @@ class GbMessage {
   });
 
   factory GbMessage.fromJson(Map<String, dynamic> j) => GbMessage(
-        id: j['id'] as String,
-        chatId: j['chatId'] as String,
-        senderId: j['senderId'] as String,
-        sender: j['sender'] != null
-            ? GbUser.fromJson(j['sender'] as Map<String, dynamic>)
-            : null,
-        type: (j['type'] ?? 'TEXT') as String,
-        text: (j['text'] ?? '') as String,
-        mediaKey: j['mediaKey'] as String?,
-        mediaUrl: j['mediaUrl'] as String?,
-        mediaMeta: (j['mediaMeta'] as Map<String, dynamic>?)?.cast<String, dynamic>(),
-        replyToId: j['replyToId'] as String?,
-        isDeleted: j['isDeleted'] == true,
-        createdAt: _dt(j['createdAt']) ?? DateTime.now(),
-        updatedAt: _dt(j['updatedAt']),
-        statuses: ((j['statuses'] ?? const []) as List)
-            .whereType<Map<String, dynamic>>()
-            .map(MsgStatusRow.fromJson)
-            .toList(),
-        reactions: ((j['reactions'] ?? const []) as List)
-            .whereType<Map<String, dynamic>>()
-            .map(MessageReaction.fromJson)
-            .toList(),
-        forwardedFrom: j['forwardedFrom'] != null
-            ? GbUser.fromJson(j['forwardedFrom'] as Map<String, dynamic>)
-            : null,
-      );
+    id: j['id'] as String,
+    chatId: j['chatId'] as String,
+    senderId: j['senderId'] as String,
+    sender: j['sender'] != null
+        ? GbUser.fromJson(j['sender'] as Map<String, dynamic>)
+        : null,
+    type: (j['type'] ?? 'TEXT') as String,
+    text: (j['text'] ?? '') as String,
+    mediaKey: j['mediaKey'] as String?,
+    mediaUrl: j['mediaUrl'] as String?,
+    mediaMeta: (j['mediaMeta'] as Map<String, dynamic>?)
+        ?.cast<String, dynamic>(),
+    replyToId: j['replyToId'] as String?,
+    isDeleted: j['isDeleted'] == true,
+    createdAt: _dt(j['createdAt']) ?? DateTime.now(),
+    updatedAt: _dt(j['updatedAt']),
+    statuses: ((j['statuses'] ?? const []) as List)
+        .whereType<Map<String, dynamic>>()
+        .map(MsgStatusRow.fromJson)
+        .toList(),
+    reactions: ((j['reactions'] ?? const []) as List)
+        .whereType<Map<String, dynamic>>()
+        .map(MessageReaction.fromJson)
+        .toList(),
+    forwardedFrom: j['forwardedFrom'] != null
+        ? GbUser.fromJson(j['forwardedFrom'] as Map<String, dynamic>)
+        : null,
+  );
 
   GbMessage copyWith({MessageStatus? localStatus}) => GbMessage(
-        id: id,
-        chatId: chatId,
-        senderId: senderId,
-        sender: sender,
-        type: type,
-        text: text,
-        mediaKey: mediaKey,
-        mediaUrl: mediaUrl,
-        mediaMeta: mediaMeta,
-        replyToId: replyToId,
-        replyTo: replyTo,
-        isDeleted: isDeleted,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-        statuses: statuses,
-        reactions: reactions,
-        forwardedFrom: forwardedFrom,
-        viewOnce: viewOnce,
-        viewed: viewed,
-        localStatus: localStatus ?? this.localStatus,
-      );
+    id: id,
+    chatId: chatId,
+    senderId: senderId,
+    sender: sender,
+    type: type,
+    text: text,
+    mediaKey: mediaKey,
+    mediaUrl: mediaUrl,
+    mediaMeta: mediaMeta,
+    replyToId: replyToId,
+    replyTo: replyTo,
+    isDeleted: isDeleted,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+    statuses: statuses,
+    reactions: reactions,
+    forwardedFrom: forwardedFrom,
+    viewOnce: viewOnce,
+    viewed: viewed,
+    localStatus: localStatus ?? this.localStatus,
+  );
 
   String preview() {
     if (isDeleted) return 'Удалено';
@@ -309,21 +314,24 @@ class GbStatus {
   });
 
   factory GbStatus.fromJson(Map<String, dynamic> j) => GbStatus(
-        id: j['id'] as String,
-        userId: j['userId'] as String,
-        user: j['user'] != null
-            ? GbUser.fromJson(j['user'] as Map<String, dynamic>)
-            : null,
-        kind: (j['kind'] ?? 'IMAGE') as String,
-        mediaKey: j['mediaKey'] as String?,
-        mediaUrl: j['mediaUrl'] as String?,
-        caption: j['caption'] as String?,
-        mediaMeta: (j['mediaMeta'] as Map<String, dynamic>?)?.cast<String, dynamic>(),
-        createdAt: _dt(j['createdAt']) ?? DateTime.now(),
-        expiresAt: _dt(j['expiresAt']),
-        viewerIds: ((j['viewerIds'] ?? const []) as List).whereType<String>().toList(),
-        viewCount: (j['viewCount'] ?? 0) as int,
-      );
+    id: j['id'] as String,
+    userId: j['userId'] as String,
+    user: j['user'] != null
+        ? GbUser.fromJson(j['user'] as Map<String, dynamic>)
+        : null,
+    kind: (j['kind'] ?? 'IMAGE') as String,
+    mediaKey: j['mediaKey'] as String?,
+    mediaUrl: j['mediaUrl'] as String?,
+    caption: j['caption'] as String?,
+    mediaMeta: (j['mediaMeta'] as Map<String, dynamic>?)
+        ?.cast<String, dynamic>(),
+    createdAt: _dt(j['createdAt']) ?? DateTime.now(),
+    expiresAt: _dt(j['expiresAt']),
+    viewerIds: ((j['viewerIds'] ?? const []) as List)
+        .whereType<String>()
+        .toList(),
+    viewCount: (j['viewCount'] ?? 0) as int,
+  );
 }
 
 class CallLog {
@@ -348,15 +356,17 @@ class CallLog {
   });
 
   factory CallLog.fromJson(Map<String, dynamic> j) => CallLog(
-        id: j['id'] as String,
-        chatId: j['chatId'] as String,
-        callerId: j['callerId'] as String,
-        calleeIds: ((j['calleeIds'] ?? const []) as List).whereType<String>().toList(),
-        kind: (j['kind'] ?? 'AUDIO') as String,
-        status: (j['status'] ?? 'completed') as String,
-        startedAt: _dt(j['startedAt']),
-        endedAt: _dt(j['endedAt']),
-      );
+    id: j['id'] as String,
+    chatId: j['chatId'] as String,
+    callerId: j['callerId'] as String,
+    calleeIds: ((j['calleeIds'] ?? const []) as List)
+        .whereType<String>()
+        .toList(),
+    kind: (j['kind'] ?? 'AUDIO') as String,
+    status: (j['status'] ?? 'completed') as String,
+    startedAt: _dt(j['startedAt']),
+    endedAt: _dt(j['endedAt']),
+  );
 }
 
 class IncomingCall {

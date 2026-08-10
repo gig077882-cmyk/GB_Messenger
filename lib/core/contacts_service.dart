@@ -47,10 +47,12 @@ class ContactsService {
         if (num.isEmpty) continue;
         final normalized = normalizePhone(num);
         if (normalized.length >= 10) {
-          result.add(PhoneContact(
-            name: (c.displayName?.isNotEmpty == true) ? c.displayName! : num,
-            phone: normalized,
-          ));
+          result.add(
+            PhoneContact(
+              name: (c.displayName?.isNotEmpty == true) ? c.displayName! : num,
+              phone: normalized,
+            ),
+          );
         }
       }
     }
@@ -76,11 +78,15 @@ class ContactsService {
     try {
       final registered = await _api.syncContacts(phones);
       final registeredIds = registered.map((u) => u.phone).toSet();
-      return phoneContacts.map((c) => PhoneContact(
-        name: c.name,
-        phone: c.phone,
-        registered: registeredIds.contains(c.phone),
-      )).toList();
+      return phoneContacts
+          .map(
+            (c) => PhoneContact(
+              name: c.name,
+              phone: c.phone,
+              registered: registeredIds.contains(c.phone),
+            ),
+          )
+          .toList();
     } catch (_) {
       return phoneContacts;
     }

@@ -32,8 +32,7 @@ class UpdateService {
   static const String _repo = 'gig077882-cmyk/GB_Messenger';
   static const String _apiUrl =
       'https://api.github.com/repos/$_repo/releases/latest';
-  static const String _htmlUrl =
-      'https://github.com/$_repo/releases/latest';
+  static const String _htmlUrl = 'https://github.com/$_repo/releases/latest';
 
   static UpdatePlatform get platform {
     if (Platform.isAndroid) return UpdatePlatform.android;
@@ -81,7 +80,8 @@ class UpdateService {
         htmlUrl: _htmlUrl,
         changelog: (data['body'] as String?) ?? '',
         isCritical: data['prerelease'] == true,
-        publishedAt: DateTime.tryParse(data['published_at'] as String? ?? '') ??
+        publishedAt:
+            DateTime.tryParse(data['published_at'] as String? ?? '') ??
             DateTime.now(),
       );
     } catch (_) {
@@ -116,20 +116,22 @@ class UpdateService {
       int received = 0;
       final total = response.contentLength ?? 0;
 
-      await response.stream.listen(
-        (chunk) {
-          sink.add(chunk);
-          received += chunk.length;
-          onProgress(received, total);
-        },
-        onDone: () async {
-          await sink.close();
-        },
-        onError: (_) async {
-          await sink.close();
-        },
-        cancelOnError: true,
-      ).asFuture();
+      await response.stream
+          .listen(
+            (chunk) {
+              sink.add(chunk);
+              received += chunk.length;
+              onProgress(received, total);
+            },
+            onDone: () async {
+              await sink.close();
+            },
+            onError: (_) async {
+              await sink.close();
+            },
+            cancelOnError: true,
+          )
+          .asFuture();
 
       return path;
     } catch (_) {
@@ -166,9 +168,7 @@ class UpdateService {
 
   Map<String, dynamic>? _parseJson(String body) {
     try {
-      return Map<String, dynamic>.from(
-        json.decode(body) as Map,
-      );
+      return Map<String, dynamic>.from(json.decode(body) as Map);
     } catch (_) {
       return null;
     }

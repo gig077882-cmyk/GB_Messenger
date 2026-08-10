@@ -104,23 +104,26 @@ class AppState extends ChangeNotifier {
   }
 
   GbChat _copyChatWithMessage(GbChat c, GbMessage m) => GbChat(
-        id: c.id,
-        type: c.type,
-        name: c.name,
-        avatarUrl: c.avatarUrl,
-        wallpaperUrl: c.wallpaperUrl,
-        createdAt: c.createdAt,
-        lastMessage: m,
-        lastMessageAt: m.createdAt,
-        unreadCount: c.unreadCount,
-        isMuted: c.isMuted,
-        iAmAdmin: c.iAmAdmin,
-        members: c.members,
-      );
+    id: c.id,
+    type: c.type,
+    name: c.name,
+    avatarUrl: c.avatarUrl,
+    wallpaperUrl: c.wallpaperUrl,
+    createdAt: c.createdAt,
+    lastMessage: m,
+    lastMessageAt: m.createdAt,
+    unreadCount: c.unreadCount,
+    isMuted: c.isMuted,
+    iAmAdmin: c.iAmAdmin,
+    members: c.members,
+  );
 
   void _sortChats() {
-    chats.sort((a, b) => (b.lastMessageAt ?? b.createdAt)
-        .compareTo(a.lastMessageAt ?? a.createdAt));
+    chats.sort(
+      (a, b) => (b.lastMessageAt ?? b.createdAt).compareTo(
+        a.lastMessageAt ?? a.createdAt,
+      ),
+    );
   }
 
   /// Отправка всех pending-сообщений при восстановлении связи.
@@ -137,7 +140,10 @@ class AppState extends ChangeNotifier {
           if (p.mediaMeta != null) 'mediaMeta': p.mediaMeta,
           if (p.replyToId != null) 'replyToId': p.replyToId,
         });
-        await db.markPendingSent(p.id, '${DateTime.now().millisecondsSinceEpoch}');
+        await db.markPendingSent(
+          p.id,
+          '${DateTime.now().millisecondsSinceEpoch}',
+        );
         notifyListeners();
       } catch (e) {
         await db.incrementPendingAttempt(p.id, e.toString());
@@ -164,26 +170,31 @@ class AppState extends ChangeNotifier {
   }
 
   GbChat _withUnread(GbChat c, int unread) => GbChat(
-        id: c.id,
-        type: c.type,
-        name: c.name,
-        avatarUrl: c.avatarUrl,
-        wallpaperUrl: c.wallpaperUrl,
-        createdAt: c.createdAt,
-        lastMessage: c.lastMessage,
-        lastMessageAt: c.lastMessageAt,
-        unreadCount: unread,
-        isMuted: c.isMuted,
-        iAmAdmin: c.iAmAdmin,
-        members: c.members,
-      );
+    id: c.id,
+    type: c.type,
+    name: c.name,
+    avatarUrl: c.avatarUrl,
+    wallpaperUrl: c.wallpaperUrl,
+    createdAt: c.createdAt,
+    lastMessage: c.lastMessage,
+    lastMessageAt: c.lastMessageAt,
+    unreadCount: unread,
+    isMuted: c.isMuted,
+    iAmAdmin: c.iAmAdmin,
+    members: c.members,
+  );
 
   Future<bool> login(String email, String password) async {
     final r = await api.login(email: email, password: password);
     return _afterAuth(r);
   }
 
-  Future<bool> register(String email, String password, String displayName, {String? phone}) async {
+  Future<bool> register(
+    String email,
+    String password,
+    String displayName, {
+    String? phone,
+  }) async {
     final r = await api.register(
       email: email,
       password: password,

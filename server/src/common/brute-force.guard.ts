@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
 import { Request } from 'express';
 
@@ -22,10 +28,10 @@ export class BruteForceGuard implements CanActivate {
     const req = context.switchToHttp().getRequest<Request>();
     const ip = this.getClientIp(req);
     const path = req.path;
-    
+
     let config = BRUTE_FORCE_CONFIGS.login;
     let keyPrefix = 'bruteforce:login';
-    
+
     if (path.includes('/register')) {
       config = BRUTE_FORCE_CONFIGS.register;
       keyPrefix = 'bruteforce:register';
@@ -65,7 +71,9 @@ export class BruteForceGuard implements CanActivate {
   private getClientIp(req: Request): string {
     const forwarded = req.headers['x-forwarded-for'];
     if (forwarded) {
-      return (typeof forwarded === 'string' ? forwarded : forwarded[0]).split(',')[0].trim();
+      return (typeof forwarded === 'string' ? forwarded : forwarded[0])
+        .split(',')[0]
+        .trim();
     }
     return req.ip ?? req.socket.remoteAddress ?? 'unknown';
   }

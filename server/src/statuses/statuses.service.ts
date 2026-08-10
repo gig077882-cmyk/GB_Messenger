@@ -6,11 +6,17 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { Prisma } from '../generated/prisma/client';
-import type { CreateStatusDto, StatusPrivacyDto, StatusReplyDto } from './dto/statuses.dto';
+import type {
+  CreateStatusDto,
+  StatusPrivacyDto,
+  StatusReplyDto,
+} from './dto/statuses.dto';
 
 const STATUS_TTL_MS = 24 * 60 * 60 * 1000;
 const messageInclude = {
-  sender: { select: { id: true, displayName: true, avatarUrl: true, username: true } },
+  sender: {
+    select: { id: true, displayName: true, avatarUrl: true, username: true },
+  },
 };
 
 @Injectable()
@@ -147,7 +153,9 @@ export class StatusesService {
   }
 
   async reply(userId: string, statusId: string, dto: StatusReplyDto) {
-    const status = await this.prisma.userStatus.findUnique({ where: { id: statusId } });
+    const status = await this.prisma.userStatus.findUnique({
+      where: { id: statusId },
+    });
     if (!status) throw new NotFoundException('Status not found');
 
     // Create a reply message in a direct chat with the status owner
@@ -180,7 +188,7 @@ export class StatusesService {
 
     const msg = await this.prisma.message.create({
       data: {
-        chatId: chatId!,
+        chatId: chatId,
         senderId: userId,
         type: 'TEXT',
         text: dto.text,
@@ -188,14 +196,17 @@ export class StatusesService {
       include: messageInclude,
     });
 
-    this.realtime.emitToChat(chatId!, 'message:new', msg);
+    this.realtime.emitToChat(chatId, 'message:new', msg);
     return msg;
   }
 
   async updatePrivacy(userId: string, statusId: string, dto: StatusPrivacyDto) {
-    const status = await this.prisma.userStatus.findUnique({ where: { id: statusId } });
+    const status = await this.prisma.userStatus.findUnique({
+      where: { id: statusId },
+    });
     if (!status) throw new NotFoundException('Status not found');
-    if (status.userId !== userId) throw new ForbiddenException('Not your status');
+    if (status.userId !== userId)
+      throw new ForbiddenException('Not your status');
 
     return this.prisma.userStatus.update({
       where: { id: statusId },

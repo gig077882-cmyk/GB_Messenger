@@ -59,7 +59,8 @@ export class AuthService {
       const phoneTaken = await this.prisma.user.findUnique({
         where: { phone: dto.phone },
       });
-      if (phoneTaken) throw new ConflictException('Phone number already registered');
+      if (phoneTaken)
+        throw new ConflictException('Phone number already registered');
     }
 
     const passwordHash = await argon2.hash(dto.password);

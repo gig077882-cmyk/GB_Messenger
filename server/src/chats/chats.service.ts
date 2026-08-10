@@ -5,9 +5,8 @@
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '../generated/prisma/client';
 import { ChatType, MemberRole } from '../generated/prisma/enums';
-import type { ChatMember } from '../generated/prisma/client';
+import type { ChatMember, Prisma } from '../generated/prisma/client';
 import { UsersService } from '../users/users.service';
 import { PUBLIC_USER_SELECT, type PublicUser } from '../users/users.select';
 import { RealtimeService } from '../realtime/realtime.service';
@@ -298,7 +297,7 @@ export class ChatsService {
 
     if (chat.type === ChatType.DIRECT) {
       // Direct chat with a 3rd participant becomes a group
-      await this.prisma.$transaction(async (tx: any) => {
+      await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         await tx.chat.update({
           where: { id: chatId },
           data: { type: ChatType.GROUP, creatorId: userId },
@@ -412,13 +411,19 @@ export class ChatsService {
   }
 
   async joinByInviteLink(userId: string, code: string) {
-    const chat = await this.prisma.chat.findUnique({ where: { inviteLink: code } });
+    const chat = await this.prisma.chat.findUnique({
+      where: { inviteLink: code },
+    });
     if (!chat) throw new NotFoundException('Invalid invite link');
 
     const existing = await this.prisma.chatMember.findUnique({
       where: { chatId_userId: { chatId: chat.id, userId } },
     });
-    if (existing) return this.prisma.chat.findUnique({ where: { id: chat.id }, include: chatInclude });
+    if (existing)
+      return this.prisma.chat.findUnique({
+        where: { id: chat.id },
+        include: chatInclude,
+      });
 
     await this.prisma.chatMember.create({
       data: { chatId: chat.id, userId, role: MemberRole.MEMBER },
@@ -428,11 +433,18 @@ export class ChatsService {
       where: { id: chat.id },
       include: chatInclude,
     });
-    this.realtime.emitToChat(chat.id, 'chat:member:added', { chatId: chat.id, userId });
+    this.realtime.emitToChat(chat.id, 'chat:member:added', {
+      chatId: chat.id,
+      userId,
+    });
     return updated;
   }
 
-  async updateGroupSettings(userId: string, chatId: string, dto: UpdateGroupSettingsDto) {
+  async updateGroupSettings(
+    userId: string,
+    chatId: string,
+    dto: UpdateGroupSettingsDto,
+  ) {
     await this.requireAdmin(chatId, userId);
     return this.prisma.chat.update({
       where: { id: chatId },

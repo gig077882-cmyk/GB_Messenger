@@ -90,7 +90,9 @@ export class UsersService {
         },
         select: { userId: true, blockedUserId: true },
       });
-      const blockedIds = new Set(blocked.flatMap((b) => [b.userId, b.blockedUserId]));
+      const blockedIds = new Set(
+        blocked.flatMap((b) => [b.userId, b.blockedUserId]),
+      );
       const filtered = matched.filter((m) => !blockedIds.has(m.id));
 
       await this.prisma.contact.createMany({

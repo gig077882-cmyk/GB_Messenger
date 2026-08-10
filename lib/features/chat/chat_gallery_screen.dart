@@ -1,4 +1,4 @@
-﻿import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/config.dart';
@@ -32,7 +32,12 @@ class _ChatGalleryScreenState extends State<ChatGalleryScreen> {
       final media = msgs
           .where((m) => m.mediaKey != null && m.mediaUrl != null)
           .toList();
-      if (mounted) setState(() { _media = media; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _media = media;
+          _loading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -46,35 +51,44 @@ class _ChatGalleryScreenState extends State<ChatGalleryScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _media.isEmpty
-              ? const EmptyState(
-                  icon: Icons.photo_library_outlined,
-                  title: 'Нет медиа',
-                  subtitle: 'Фото и видео появятся هنا',
-                )
-              : GridView.builder(
-                  padding: const EdgeInsets.all(2),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 2,
+          ? const EmptyState(
+              icon: Icons.photo_library_outlined,
+              title: 'Нет медиа',
+              subtitle: 'Фото и видео появятся هنا',
+            )
+          : GridView.builder(
+              padding: const EdgeInsets.all(2),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 2,
+                crossAxisSpacing: 2,
+              ),
+              itemCount: _media.length,
+              itemBuilder: (_, i) {
+                final m = _media[i];
+                final url = m.mediaUrl.startsWith('http')
+                    ? m.mediaUrl
+                    : '${AppConfig.apiBase}${m.mediaUrl}';
+                return GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          MediaViewerScreen(imageUrl: url, caption: m.text),
+                    ),
                   ),
-                  itemCount: _media.length,
-                  itemBuilder: (_, i) {
-                    final m = _media[i];
-                    final url = m.mediaUrl.startsWith('http') ? m.mediaUrl : '${AppConfig.apiBase}${m.mediaUrl}';
-                    return GestureDetector(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => MediaViewerScreen(imageUrl: url, caption: m.text),
-                      )),
-                      child: CachedNetworkImage(
-                        imageUrl: url,
-                        fit: BoxFit.cover,
-                        placeholder: (_, _) => Container(color: theme.theme.surface),
-                        errorWidget: (_, _, _) => Container(color: theme.theme.surface, child: const Icon(Icons.broken_image)),
-                      ),
-                    );
-                  },
-                ),
+                  child: CachedNetworkImage(
+                    imageUrl: url,
+                    fit: BoxFit.cover,
+                    placeholder: (_, _) =>
+                        Container(color: theme.theme.surface),
+                    errorWidget: (_, _, _) => Container(
+                      color: theme.theme.surface,
+                      child: const Icon(Icons.broken_image),
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
@@ -83,7 +97,12 @@ class EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  const EmptyState({super.key, required this.icon, required this.title, this.subtitle});
+  const EmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +113,10 @@ class EmptyState extends StatelessWidget {
         children: [
           Icon(icon, size: 64, color: theme.theme.stroke),
           const SizedBox(height: 16),
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
           if (subtitle != null) ...[
             const SizedBox(height: 6),
             Text(subtitle!, style: TextStyle(color: theme.theme.textHint)),

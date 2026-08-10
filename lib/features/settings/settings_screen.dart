@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,18 +23,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _changeAvatar() async {
     final app = context.read<AppState>();
-    final p = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 82);
+    final p = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 82,
+    );
     if (p == null) return;
     final file = File(p.path);
     setState(() => _uploading = true);
     try {
       final pre = await _api.presign(
-          fileName: p.name, mimeType: p.mimeType ?? 'image/jpeg', size: await file.length());
-      await _api.uploadBytes(pre.uploadUrl, await file.readAsBytes(), p.mimeType ?? 'image/jpeg');
-      final updated = await _api.patchMe({'avatarKey': pre.key, 'avatarUrl': pre.downloadUrl});
+        fileName: p.name,
+        mimeType: p.mimeType ?? 'image/jpeg',
+        size: await file.length(),
+      );
+      await _api.uploadBytes(
+        pre.uploadUrl,
+        await file.readAsBytes(),
+        p.mimeType ?? 'image/jpeg',
+      );
+      final updated = await _api.patchMe({
+        'avatarKey': pre.key,
+        'avatarUrl': pre.downloadUrl,
+      });
       app.updateMe(updated);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      }
     } finally {
       if (mounted) setState(() => _uploading = false);
     }
@@ -49,8 +66,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text(title),
         content: TextField(controller: ctrl, autofocus: true),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Отмена')),
-          TextButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('Сохранить')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: const Text('Сохранить'),
+          ),
         ],
       ),
     );
@@ -59,7 +82,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final updated = await _api.patchMe({field: result});
       app.updateMe(updated);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      }
     }
   }
 
@@ -76,18 +103,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              GBAvatar(url: me?.avatarUrl, name: me?.displayName ?? '?', size: 80),
+              GBAvatar(
+                url: me?.avatarUrl,
+                name: me?.displayName ?? '?',
+                size: 80,
+              ),
               if (_uploading)
                 Container(
-                  width: 80, height: 80,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(40),
                   ),
-                  child: const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               Positioned(
-                right: 0, bottom: 0,
+                right: 0,
+                bottom: 0,
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -95,7 +133,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: theme.theme.surface, width: 2),
                   ),
-                  child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                  child: const Icon(
+                    Icons.camera_alt,
+                    size: 16,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -103,14 +145,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         const SizedBox(height: 12),
         Center(
-          child: Text(me?.displayName ?? '', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+          child: Text(
+            me?.displayName ?? '',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
         ),
         if (me?.phone != null && me!.phone!.isNotEmpty)
           Center(
-            child: Text(me.phone!, style: TextStyle(color: theme.theme.textHint, fontSize: 13)),
+            child: Text(
+              me.phone!,
+              style: TextStyle(color: theme.theme.textHint, fontSize: 13),
+            ),
           ),
         Center(
-          child: Text(me?.email ?? '', style: TextStyle(color: theme.theme.textHint, fontSize: 13)),
+          child: Text(
+            me?.email ?? '',
+            style: TextStyle(color: theme.theme.textHint, fontSize: 13),
+          ),
         ),
         const SizedBox(height: 24),
         _SettingTile(
@@ -162,17 +213,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (ctx) => AlertDialog(
                 title: const Text('Выйти из аккаунта?'),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Отмена')),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('Отмена'),
+                  ),
                   TextButton(
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text('Выйти', style: TextStyle(color: Colors.red)),
+                    child: const Text(
+                      'Выйти',
+                      style: TextStyle(color: Colors.red),
+                    ),
                   ),
                 ],
               ),
             );
-             if (ok == true && context.mounted) {
-               await context.read<AppState>().logout();
-             }
+            if (ok == true && context.mounted) {
+              await context.read<AppState>().logout();
+            }
           },
         ),
         const SizedBox(height: 30),
@@ -204,7 +261,9 @@ class _SettingTile extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: theme.theme.textHint),
       title: Text(title, style: TextStyle(color: titleColor)),
-      subtitle: subtitle == null ? null : Text(subtitle!, style: const TextStyle(fontSize: 12.5)),
+      subtitle: subtitle == null
+          ? null
+          : Text(subtitle!, style: const TextStyle(fontSize: 12.5)),
       trailing: trailing,
       onTap: onTap,
     );

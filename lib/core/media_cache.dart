@@ -26,7 +26,11 @@ class MediaCache {
   }
 
   /// Получить файл медиа по ключу (сначала кэш, потом скачать).
-  Future<File?> getOrDownload(String url, String cacheKey, {bool original = false}) async {
+  Future<File?> getOrDownload(
+    String url,
+    String cacheKey, {
+    bool original = false,
+  }) async {
     final dir = original ? await _origDir : await _thumbDir;
     final ext = p.extension(Uri.parse(url).path).isNotEmpty
         ? p.extension(Uri.parse(url).path)
@@ -58,7 +62,9 @@ class MediaCache {
     for (final f in files) {
       if (total <= _maxOriginalBytes) break;
       total -= f.lengthSync();
-      try { f.deleteSync(); } catch (_) {}
+      try {
+        f.deleteSync();
+      } catch (_) {}
     }
   }
 }

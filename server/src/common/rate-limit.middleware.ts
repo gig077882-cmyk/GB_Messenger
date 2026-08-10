@@ -1,4 +1,9 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  NestMiddleware,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { RedisService } from '../redis/redis.service';
 
@@ -21,7 +26,7 @@ export class RateLimitMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const ip = this.getClientIp(req);
     const path = req.path;
-    
+
     let config = RATE_LIMITS.default;
     if (path.includes('/auth/')) {
       config = RATE_LIMITS.auth;
@@ -32,7 +37,7 @@ export class RateLimitMiddleware implements NestMiddleware {
     }
 
     const key = `ratelimit:${ip}:${path.split('/')[2] ?? 'default'}`;
-    
+
     try {
       const current = await this.redis.incr(key);
       if (current === 1) {
@@ -40,9 +45,12 @@ export class RateLimitMiddleware implements NestMiddleware {
       }
 
       const ttl = await this.redis.ttl(key);
-      
+
       res.setHeader('X-RateLimit-Limit', config.maxRequests);
-      res.setHeader('X-RateLimit-Remaining', Math.max(0, config.maxRequests - current));
+      res.setHeader(
+        'X-RateLimit-Remaining',
+        Math.max(0, config.maxRequests - current),
+      );
       res.setHeader('X-RateLimit-Reset', ttl);
 
       if (current > config.maxRequests) {
@@ -62,7 +70,9 @@ export class RateLimitMiddleware implements NestMiddleware {
   private getClientIp(req: Request): string {
     const forwarded = req.headers['x-forwarded-for'];
     if (forwarded) {
-      return (typeof forwarded === 'string' ? forwarded : forwarded[0]).split(',')[0].trim();
+      return (typeof forwarded === 'string' ? forwarded : forwarded[0])
+        .split(',')[0]
+        .trim();
     }
     return req.ip ?? req.socket.remoteAddress ?? 'unknown';
   }

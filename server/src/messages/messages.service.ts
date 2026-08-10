@@ -369,7 +369,10 @@ export class MessagesService {
     };
   }
 
-  async forwardMessage(userId: string, dto: { messageIds: string[]; targetChatId: string }) {
+  async forwardMessage(
+    userId: string,
+    dto: { messageIds: string[]; targetChatId: string },
+  ) {
     const targetMember = await this.prisma.chatMember.findUnique({
       where: { chatId_userId: { chatId: dto.targetChatId, userId } },
     });

@@ -38,7 +38,11 @@ class ReactionBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: theme.theme.stroke),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 1)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
           ],
         ),
         child: Row(
@@ -53,12 +57,16 @@ class ReactionBar extends StatelessWidget {
                   Text(e.key, style: const TextStyle(fontSize: 13)),
                   if (e.value.length > 1) ...[
                     const SizedBox(width: 2),
-                    Text('${e.value.length}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: mine ? GBTheme.whatsAppGreen : theme.theme.textHint,
-                          fontWeight: mine ? FontWeight.w600 : FontWeight.normal,
-                        )),
+                    Text(
+                      '${e.value.length}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: mine
+                            ? GBTheme.whatsAppGreen
+                            : theme.theme.textHint,
+                        fontWeight: mine ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -88,7 +96,9 @@ class ReactionPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ThemeScope.of(context);
-    final myReaction = message.reactions.where((r) => r.userId == myId).firstOrNull;
+    final myReaction = message.reactions
+        .where((r) => r.userId == myId)
+        .firstOrNull;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -96,7 +106,11 @@ class ReactionPicker extends StatelessWidget {
         color: theme.theme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -109,7 +123,9 @@ class ReactionPicker extends StatelessWidget {
               padding: const EdgeInsets.all(6),
               margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
-                color: selected ? GBTheme.whatsAppGreen.withValues(alpha: 0.2) : Colors.transparent,
+                color: selected
+                    ? GBTheme.whatsAppGreen.withValues(alpha: 0.2)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(e, style: const TextStyle(fontSize: 22)),

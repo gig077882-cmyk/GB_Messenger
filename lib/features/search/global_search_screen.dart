@@ -33,14 +33,21 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   void _search(String q) {
     _debounce?.cancel();
     if (q.trim().length < 2) {
-      setState(() { _users = []; });
+      setState(() {
+        _users = [];
+      });
       return;
     }
     _debounce = Timer(const Duration(milliseconds: 350), () async {
       setState(() => _loading = true);
       try {
         final users = await _api.searchUsers(q.trim());
-        if (mounted) setState(() { _users = users; _loading = false; });
+        if (mounted) {
+          setState(() {
+            _users = users;
+            _loading = false;
+          });
+        }
       } catch (_) {
         if (mounted) setState(() => _loading = false);
       }
@@ -64,31 +71,40 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _q.text.trim().length < 2
-              ? const EmptyState(
-                  icon: Icons.search,
-                  title: 'Найди контакты и чаты',
-                  subtitle: 'Введи минимум 2 символа')
-              : ListView(
-                  children: [
-                    if (_users.isNotEmpty) ...[
-                      const SectionTitle(text: 'КОНТАКТЫ'),
-                      ..._users.map((u) => ListTile(
-                            leading: GBAvatar(url: u.avatarUrl, name: u.displayName, size: 44),
-                            title: Text(u.displayName),
-                            subtitle: Text(u.email),
-                             onTap: () async {
-                               final appState = context.read<AppState>();
-                               final chat = await _api.createDirect(u.id);
-                               await appState.refreshChats();
-                               if (!context.mounted) return;
-                               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                 builder: (_) => ChatScreen(chatId: chat.id),
-                               ));
-                             },
-                          )),
-                    ],
-                  ],
-                ),
+          ? const EmptyState(
+              icon: Icons.search,
+              title: 'Найди контакты и чаты',
+              subtitle: 'Введи минимум 2 символа',
+            )
+          : ListView(
+              children: [
+                if (_users.isNotEmpty) ...[
+                  const SectionTitle(text: 'КОНТАКТЫ'),
+                  ..._users.map(
+                    (u) => ListTile(
+                      leading: GBAvatar(
+                        url: u.avatarUrl,
+                        name: u.displayName,
+                        size: 44,
+                      ),
+                      title: Text(u.displayName),
+                      subtitle: Text(u.email),
+                      onTap: () async {
+                        final appState = context.read<AppState>();
+                        final chat = await _api.createDirect(u.id);
+                        await appState.refreshChats();
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (_) => ChatScreen(chatId: chat.id),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ],
+            ),
     );
   }
 }

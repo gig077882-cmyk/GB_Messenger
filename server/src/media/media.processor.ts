@@ -150,9 +150,7 @@ export class MediaProcessor implements OnModuleInit, OnModuleDestroy {
       await client.fPutObject(this.bucketName, compressedKey, tmpFile);
       return compressedKey;
     } catch (err) {
-      this.logger.debug(
-        `image compression skipped: ${(err as Error).message}`,
-      );
+      this.logger.debug(`image compression skipped: ${(err as Error).message}`);
       return null;
     }
   }
@@ -192,9 +190,7 @@ export class MediaProcessor implements OnModuleInit, OnModuleDestroy {
       await client.fPutObject(this.bucketName, compressedKey, tmpFile);
       return compressedKey;
     } catch (err) {
-      this.logger.debug(
-        `video compression skipped: ${(err as Error).message}`,
-      );
+      this.logger.debug(`video compression skipped: ${(err as Error).message}`);
       return null;
     }
   }
@@ -226,9 +222,7 @@ export class MediaProcessor implements OnModuleInit, OnModuleDestroy {
       await client.fPutObject(this.bucketName, compressedKey, tmpFile);
       return compressedKey;
     } catch (err) {
-      this.logger.debug(
-        `audio compression skipped: ${(err as Error).message}`,
-      );
+      this.logger.debug(`audio compression skipped: ${(err as Error).message}`);
       return null;
     }
   }

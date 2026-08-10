@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 export class SanitizationMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     if (req.body && typeof req.body === 'object') {
-      this.sanitizeObject(req.body);
+      this.sanitizeObject(req.body as Record<string, unknown>);
     }
     next();
   }

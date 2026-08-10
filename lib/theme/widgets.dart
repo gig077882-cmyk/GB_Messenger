@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +32,13 @@ class GBAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ThemeScope.of(context);
     final initials = name.isNotEmpty
-        ? name.trim().split(RegExp(r'\s+')).take(2).map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase()
+        ? name
+              .trim()
+              .split(RegExp(r'\s+'))
+              .take(2)
+              .map((e) => e.isNotEmpty ? e[0] : '')
+              .join()
+              .toUpperCase()
         : '?';
     return SizedBox(
       width: size,
@@ -57,8 +63,7 @@ class GBAvatar extends StatelessWidget {
                 ),
               ),
             ),
-          if (badge != null)
-            Positioned(right: -2, bottom: -2, child: badge!),
+          if (badge != null) Positioned(right: -2, bottom: -2, child: badge!),
         ],
       ),
     );
@@ -112,24 +117,41 @@ class NeonButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        boxShadow: onPressed == null || outline ? null : softShadow(opacity: 0.15),
+        boxShadow: onPressed == null || outline
+            ? null
+            : softShadow(opacity: 0.15),
       ),
       child: outline
           ? OutlinedButton(
               onPressed: loading ? null : onPressed,
               style: OutlinedButton.styleFrom(
                 foregroundColor: GBTheme.whatsAppGreen,
-                side: const BorderSide(color: GBTheme.whatsAppGreen, width: 1.2),
+                side: const BorderSide(
+                  color: GBTheme.whatsAppGreen,
+                  width: 1.2,
+                ),
                 minimumSize: const Size.fromHeight(48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
               child: loading
-                  ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: GBTheme.whatsAppGreen))
+                  ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.4,
+                        color: GBTheme.whatsAppGreen,
+                      ),
+                    )
                   : Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
+                        if (icon != null) ...[
+                          Icon(icon, size: 20),
+                          const SizedBox(width: 8),
+                        ],
                         Text(label),
                       ],
                     ),
@@ -140,15 +162,27 @@ class NeonButton extends StatelessWidget {
                 minimumSize: const Size.fromHeight(48),
                 backgroundColor: GBTheme.whatsAppGreen,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
               child: loading
-                  ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.4,
+                        color: Colors.white,
+                      ),
+                    )
                   : Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
+                        if (icon != null) ...[
+                          Icon(icon, size: 20),
+                          const SizedBox(width: 8),
+                        ],
                         Text(label),
                       ],
                     ),
@@ -170,12 +204,15 @@ class SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Row(
         children: [
-          Text(text, style: TextStyle(
-            color: theme.theme.textHint,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          )),
+          Text(
+            text,
+            style: TextStyle(
+              color: theme.theme.textHint,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
           const Spacer(),
           // ignore: use_null_aware_elements
           ...[if (trailing != null) trailing!],
@@ -195,8 +232,12 @@ class StatusTicks extends StatelessWidget {
   Widget build(BuildContext context) {
     if (status == MessageStatus.sending) {
       return SizedBox(
-        width: size, height: size,
-        child: CircularProgressIndicator(strokeWidth: 1.5, color: GBTheme.textSecondary),
+        width: size,
+        height: size,
+        child: CircularProgressIndicator(
+          strokeWidth: 1.5,
+          color: GBTheme.textSecondary,
+        ),
       );
     }
     if (status == MessageStatus.failed) {
@@ -218,7 +259,9 @@ class StatusTicks extends StatelessWidget {
         ),
       );
     }
-    final color = status == MessageStatus.delivered ? GBTheme.textSecondary : GBTheme.textSecondary.withValues(alpha: 0.6);
+    final color = status == MessageStatus.delivered
+        ? GBTheme.textSecondary
+        : GBTheme.textSecondary.withValues(alpha: 0.6);
     return SizedBox(
       width: size * 1.8,
       child: Row(
@@ -242,7 +285,13 @@ class EmptyState extends StatelessWidget {
   final String title;
   final String? subtitle;
   final Widget? action;
-  const EmptyState({super.key, required this.icon, required this.title, this.subtitle, this.action});
+  const EmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.action,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -255,11 +304,21 @@ class EmptyState extends StatelessWidget {
           children: [
             Icon(icon, size: 56, color: theme.theme.stroke),
             const SizedBox(height: 12),
-            Text(title, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: theme.theme.textMain)),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: theme.theme.textMain,
+              ),
+            ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
-              Text(subtitle!, textAlign: TextAlign.center,
-                  style: TextStyle(color: theme.theme.textHint, fontSize: 13)),
+              Text(
+                subtitle!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: theme.theme.textHint, fontSize: 13),
+              ),
             ],
             if (action != null) ...[const SizedBox(height: 20), action!],
           ],
@@ -308,7 +367,14 @@ class MediaCachedImage extends StatelessWidget {
   final double width;
   final double height;
   final ThemeProvider theme;
-  const MediaCachedImage({super.key, required this.url, required this.cacheKey, required this.width, required this.height, required this.theme});
+  const MediaCachedImage({
+    super.key,
+    required this.url,
+    required this.cacheKey,
+    required this.width,
+    required this.height,
+    required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -316,7 +382,12 @@ class MediaCachedImage extends StatelessWidget {
       future: MediaCache.instance.getThumbnail(url, cacheKey),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
-          return Image.file(snapshot.data!, width: width, height: height, fit: BoxFit.cover);
+          return Image.file(
+            snapshot.data!,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          );
         }
         return CachedNetworkImage(
           imageUrl: url,
@@ -324,12 +395,17 @@ class MediaCachedImage extends StatelessWidget {
           height: height,
           fit: BoxFit.cover,
           errorWidget: (_, _, _) => Container(
-            width: width, height: height,
+            width: width,
+            height: height,
             color: theme.theme.bg,
-            child: Icon(Icons.broken_image_outlined, color: theme.theme.textHint),
+            child: Icon(
+              Icons.broken_image_outlined,
+              color: theme.theme.textHint,
+            ),
           ),
           placeholder: (_, _) => Container(
-            width: width, height: height,
+            width: width,
+            height: height,
             color: theme.theme.bg,
             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),

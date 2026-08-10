@@ -38,3 +38,9 @@ android/app/google-services.json
 android/keystore.properties
 *.jks
 *.keystore
+
+# Server (Node/NestJS)
+server/node_modules/
+server/dist/
+server/package-lock.json
+server/.env

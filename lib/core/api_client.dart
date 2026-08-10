@@ -9,31 +9,36 @@ class ApiClient {
   final _tokenStorage = TokenStorage();
 
   ApiClient() {
-    dio = Dio(BaseOptions(
-      baseUrl: AppConfig.apiBase,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 30),
-      headers: {'Accept': 'application/json'},
-    ));
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (o, h) async {
-        final t = await _tokenStorage.accessToken();
-        if (t != null) o.headers['Authorization'] = 'Bearer $t';
-        h.next(o);
-      },
-      onError: (e, h) async {
-        if (e.response?.statusCode == 401 && e.requestOptions.path != '/auth/login') {
-          final refreshed = await _tryRefresh();
-          if (refreshed) {
-            final t = await _tokenStorage.accessToken();
-            e.requestOptions.headers['Authorization'] = 'Bearer $t';
-            h.resolve(await dio.fetch(e.requestOptions));
-            return;
+    dio = Dio(
+      BaseOptions(
+        baseUrl: AppConfig.apiBase,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 30),
+        headers: {'Accept': 'application/json'},
+      ),
+    );
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (o, h) async {
+          final t = await _tokenStorage.accessToken();
+          if (t != null) o.headers['Authorization'] = 'Bearer $t';
+          h.next(o);
+        },
+        onError: (e, h) async {
+          if (e.response?.statusCode == 401 &&
+              e.requestOptions.path != '/auth/login') {
+            final refreshed = await _tryRefresh();
+            if (refreshed) {
+              final t = await _tokenStorage.accessToken();
+              e.requestOptions.headers['Authorization'] = 'Bearer $t';
+              h.resolve(await dio.fetch(e.requestOptions));
+              return;
+            }
           }
-        }
-        h.next(e);
-      },
-    ));
+          h.next(e);
+        },
+      ),
+    );
   }
 
   Future<bool> _tryRefresh() async {
@@ -42,7 +47,10 @@ class ApiClient {
     try {
       final r = await dio.post('/auth/refresh', data: {'refreshToken': rt});
       final d = r.data as Map<String, dynamic>;
-      await _tokenStorage.saveTokens(d['accessToken'] as String, d['refreshToken'] as String);
+      await _tokenStorage.saveTokens(
+        d['accessToken'] as String,
+        d['refreshToken'] as String,
+      );
       return true;
     } catch (_) {
       await _tokenStorage.clear();

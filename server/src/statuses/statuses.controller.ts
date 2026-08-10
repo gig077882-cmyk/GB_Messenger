@@ -13,7 +13,11 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user';
 import { StatusesService } from './statuses.service';
-import { CreateStatusDto, StatusPrivacyDto, StatusReplyDto } from './dto/statuses.dto';
+import {
+  CreateStatusDto,
+  StatusPrivacyDto,
+  StatusReplyDto,
+} from './dto/statuses.dto';
 
 @ApiTags('statuses')
 @ApiBearerAuth()

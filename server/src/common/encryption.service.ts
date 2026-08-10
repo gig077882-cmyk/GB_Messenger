@@ -16,11 +16,17 @@ export class EncryptionService {
     const key = this.config.get<string>('ENCRYPTION_KEY');
     if (!key) {
       this.logger.warn('ENCRYPTION_KEY not set - using default (INSECURE!)');
-      this.masterKey = crypto.scryptSync('default-key-change-me', 'salt', this.keyLength);
+      this.masterKey = crypto.scryptSync(
+        'default-key-change-me',
+        'salt',
+        this.keyLength,
+      );
     } else {
       this.masterKey = Buffer.from(key, 'hex');
       if (this.masterKey.length !== this.keyLength) {
-        throw new Error(`ENCRYPTION_KEY must be ${this.keyLength * 2} hex chars`);
+        throw new Error(
+          `ENCRYPTION_KEY must be ${this.keyLength * 2} hex chars`,
+        );
       }
     }
   }
@@ -28,12 +34,12 @@ export class EncryptionService {
   encrypt(plaintext: string): string {
     const iv = crypto.randomBytes(this.ivLength);
     const cipher = crypto.createCipheriv(this.algorithm, this.masterKey, iv);
-    
+
     let encrypted = cipher.update(plaintext, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     const tag = cipher.getAuthTag();
-    
+
     return iv.toString('hex') + ':' + tag.toString('hex') + ':' + encrypted;
   }
 
@@ -42,27 +48,31 @@ export class EncryptionService {
     if (parts.length !== 3) {
       throw new Error('Invalid encrypted format');
     }
-    
+
     const iv = Buffer.from(parts[0], 'hex');
     const tag = Buffer.from(parts[1], 'hex');
     const encrypted = parts[2];
-    
-    const decipher = crypto.createDecipheriv(this.algorithm, this.masterKey, iv);
+
+    const decipher = crypto.createDecipheriv(
+      this.algorithm,
+      this.masterKey,
+      iv,
+    );
     decipher.setAuthTag(tag);
-    
+
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-    
+
     return decrypted;
   }
 
   encryptBytes(data: Buffer): Buffer {
     const iv = crypto.randomBytes(this.ivLength);
     const cipher = crypto.createCipheriv(this.algorithm, this.masterKey, iv);
-    
+
     const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
     const tag = cipher.getAuthTag();
-    
+
     return Buffer.concat([iv, tag, encrypted]);
   }
 
@@ -70,10 +80,14 @@ export class EncryptionService {
     const iv = data.subarray(0, this.ivLength);
     const tag = data.subarray(this.ivLength, this.ivLength + this.tagLength);
     const encrypted = data.subarray(this.ivLength + this.tagLength);
-    
-    const decipher = crypto.createDecipheriv(this.algorithm, this.masterKey, iv);
+
+    const decipher = crypto.createDecipheriv(
+      this.algorithm,
+      this.masterKey,
+      iv,
+    );
     decipher.setAuthTag(tag);
-    
+
     return Buffer.concat([decipher.update(encrypted), decipher.final()]);
   }
 

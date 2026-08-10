@@ -10,7 +10,8 @@ class ApiService {
 
   Dio get _d => ApiClient().dio;
 
-  Map<String, dynamic> _j(Response r) => (r.data as Map).cast<String, dynamic>();
+  Map<String, dynamic> _j(Response r) =>
+      (r.data as Map).cast<String, dynamic>();
   List<dynamic> _l(Response r) => (r.data as List);
 
   // ── Auth ────────────────────────────────────────────────────────────────
@@ -22,14 +23,17 @@ class ApiService {
     String? deviceId,
     String? fcmToken,
   }) async {
-    final r = await _d.post('/auth/register', data: {
-      'email': email,
-      'password': password,
-      'displayName': displayName,
-      if (phone != null && phone.isNotEmpty) 'phone': phone,
-      'deviceId': deviceId,
-      'fcmToken': fcmToken,
-    });
+    final r = await _d.post(
+      '/auth/register',
+      data: {
+        'email': email,
+        'password': password,
+        'displayName': displayName,
+        if (phone != null && phone.isNotEmpty) 'phone': phone,
+        'deviceId': deviceId,
+        'fcmToken': fcmToken,
+      },
+    );
     return _auth(_j(r));
   }
 
@@ -39,12 +43,15 @@ class ApiService {
     String? deviceId,
     String? fcmToken,
   }) async {
-    final r = await _d.post('/auth/login', data: {
-      'email': email,
-      'password': password,
-      'deviceId': deviceId,
-      'fcmToken': fcmToken,
-    });
+    final r = await _d.post(
+      '/auth/login',
+      data: {
+        'email': email,
+        'password': password,
+        'deviceId': deviceId,
+        'fcmToken': fcmToken,
+      },
+    );
     return _auth(_j(r));
   }
 
@@ -55,10 +62,10 @@ class ApiService {
   }
 
   AuthResult _auth(Map<String, dynamic> j) => AuthResult(
-        accessToken: j['accessToken'] as String,
-        refreshToken: j['refreshToken'] as String,
-        user: GbUser.fromJson(j['user'] as Map<String, dynamic>),
-      );
+    accessToken: j['accessToken'] as String,
+    refreshToken: j['refreshToken'] as String,
+    user: GbUser.fromJson(j['user'] as Map<String, dynamic>),
+  );
 
   // ── Users ───────────────────────────────────────────────────────────────
   Future<GbUser> me() async => GbUser.fromJson(_j(await _d.get('/users/me')));
@@ -72,46 +79,54 @@ class ApiService {
     return createDirect(users.first.id);
   }
 
-  Future<List<GbUser>> searchByPhone(String phone) async =>
-      _l(await _d.get('/users/search', queryParameters: {'phone': phone}))
-          .map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
+  Future<List<GbUser>> searchByPhone(String phone) async => _l(
+    await _d.get('/users/search', queryParameters: {'phone': phone}),
+  ).map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>())).toList();
 
-  Future<List<GbUser>> searchUsers(String q) async =>
-      _l(await _d.get('/users/search', queryParameters: {'q': q}))
-          .map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
+  Future<List<GbUser>> searchUsers(String q) async => _l(
+    await _d.get('/users/search', queryParameters: {'q': q}),
+  ).map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>())).toList();
 
-  Future<List<GbUser>> syncContacts(List<String> phones) async =>
-      _l(await _d.post('/users/contacts/sync', data: {'phones': phones}))
-          .map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
+  Future<List<GbUser>> syncContacts(List<String> phones) async => _l(
+    await _d.post('/users/contacts/sync', data: {'phones': phones}),
+  ).map((e) => GbUser.fromJson((e as Map).cast<String, dynamic>())).toList();
 
-  Future<void> blockUser(String id) => _d.post('/users/block', data: {'userId': id});
+  Future<void> blockUser(String id) =>
+      _d.post('/users/block', data: {'userId': id});
   Future<void> unblockUser(String id) => _d.delete('/users/block/$id');
   Future<Map<String, dynamic>> registerPushToken({
     required String token,
     required String platform,
     String? deviceId,
-  }) async =>
-      _j(await _d.post('/users/me/push', data: {
+  }) async => _j(
+    await _d.post(
+      '/users/me/push',
+      data: {
         'token': token,
         'platform': platform,
         if (deviceId != null) ...{'deviceId': deviceId},
-      }));
+      },
+    ),
+  );
 
   // ── Chats ───────────────────────────────────────────────────────────────
-  Future<GbChat> createDirect(String userId) async =>
-      GbChat.fromJson(_j(await _d.post('/chats/direct', data: {'userId': userId})));
+  Future<GbChat> createDirect(String userId) async => GbChat.fromJson(
+    _j(await _d.post('/chats/direct', data: {'userId': userId})),
+  );
 
   Future<GbChat> createGroup(String name, List<String> memberIds) async =>
-      GbChat.fromJson(_j(await _d.post('/chats/group',
-          data: {'name': name, 'memberIds': memberIds})));
+      GbChat.fromJson(
+        _j(
+          await _d.post(
+            '/chats/group',
+            data: {'name': name, 'memberIds': memberIds},
+          ),
+        ),
+      );
 
-  Future<List<GbChat>> chats() async =>
-      _l(await _d.get('/chats'))
-          .map((e) => GbChat.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
+  Future<List<GbChat>> chats() async => _l(
+    await _d.get('/chats'),
+  ).map((e) => GbChat.fromJson((e as Map).cast<String, dynamic>())).toList();
 
   Future<GbChat> chat(String id) async =>
       GbChat.fromJson(_j(await _d.get('/chats/$id')));
@@ -125,8 +140,10 @@ class ApiService {
   Future<void> removeMember(String chatId, String userId) =>
       _d.delete('/chats/$chatId/members/$userId');
 
-  Future<void> setAdmin(String chatId, String userId, bool isAdmin) =>
-      _d.post('/chats/$chatId/admins', data: {'userId': userId, 'isAdmin': isAdmin});
+  Future<void> setAdmin(String chatId, String userId, bool isAdmin) => _d.post(
+    '/chats/$chatId/admins',
+    data: {'userId': userId, 'isAdmin': isAdmin},
+  );
 
   Future<void> markRead(String chatId) =>
       _d.patch('/chats/$chatId/me', data: {'lastReadMessageId': null});
@@ -134,11 +151,18 @@ class ApiService {
   Future<void> leaveChat(String chatId) => _d.delete('/chats/$chatId/leave');
 
   // ── Messages ────────────────────────────────────────────────────────────
-  Future<List<GbMessage>> messages(String chatId, {String? cursor, int? limit}) async {
-    final r = await _d.get('/chats/$chatId/messages', queryParameters: {
-      if (cursor != null) ...{'cursor': cursor},
-      if (limit != null) ...{'limit': limit},
-    });
+  Future<List<GbMessage>> messages(
+    String chatId, {
+    String? cursor,
+    int? limit,
+  }) async {
+    final r = await _d.get(
+      '/chats/$chatId/messages',
+      queryParameters: {
+        if (cursor != null) ...{'cursor': cursor},
+        if (limit != null) ...{'limit': limit},
+      },
+    );
     final data = _j(r);
     return ((data['items'] ?? data['messages'] ?? data['data']) as List? ??
             (r.data as List))
@@ -146,11 +170,17 @@ class ApiService {
         .toList();
   }
 
-  Future<GbMessage> sendMessage(String chatId, Map<String, dynamic> data) async =>
-      GbMessage.fromJson(_j(await _d.post('/chats/$chatId/messages', data: data)));
+  Future<GbMessage> sendMessage(
+    String chatId,
+    Map<String, dynamic> data,
+  ) async => GbMessage.fromJson(
+    _j(await _d.post('/chats/$chatId/messages', data: data)),
+  );
 
   Future<GbMessage> editMessage(String id, String text) async =>
-      GbMessage.fromJson(_j(await _d.patch('/messages/$id', data: {'text': text})));
+      GbMessage.fromJson(
+        _j(await _d.patch('/messages/$id', data: {'text': text})),
+      );
 
   Future<void> deleteMessage(String id, {bool forAll = true}) =>
       _d.delete('/messages/$id', queryParameters: {'forAll': forAll});
@@ -161,11 +191,12 @@ class ApiService {
     required String mimeType,
     required int size,
   }) async {
-    final j = _j(await _d.post('/media/presign', data: {
-      'fileName': fileName,
-      'mimeType': mimeType,
-      'size': size,
-    }));
+    final j = _j(
+      await _d.post(
+        '/media/presign',
+        data: {'fileName': fileName, 'mimeType': mimeType, 'size': size},
+      ),
+    );
     return (
       key: j['key'] as String,
       uploadUrl: j['uploadUrl'] as String,
@@ -190,18 +221,23 @@ class ApiService {
     String? caption,
     Map<String, dynamic>? mediaMeta,
     String kind = 'IMAGE',
-  }) async =>
-      GbStatus.fromJson(_j(await _d.post('/statuses', data: {
-        'mediaKey': mediaKey,
-        'caption': caption,
-        'mediaMeta': mediaMeta,
-        'kind': kind,
-      })));
+  }) async => GbStatus.fromJson(
+    _j(
+      await _d.post(
+        '/statuses',
+        data: {
+          'mediaKey': mediaKey,
+          'caption': caption,
+          'mediaMeta': mediaMeta,
+          'kind': kind,
+        },
+      ),
+    ),
+  );
 
-  Future<List<GbStatus>> statusFeed() async =>
-      _l(await _d.get('/statuses/feed'))
-          .map((e) => GbStatus.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
+  Future<List<GbStatus>> statusFeed() async => _l(
+    await _d.get('/statuses/feed'),
+  ).map((e) => GbStatus.fromJson((e as Map).cast<String, dynamic>())).toList();
 
   Future<void> viewStatus(String id) => _d.post('/statuses/$id/view');
   Future<void> deleteStatus(String id) => _d.delete('/statuses/$id');
@@ -212,28 +248,44 @@ class ApiService {
     return (token: j['token'] as String, serverUrl: j['serverUrl'] as String);
   }
 
-  Future<List<CallLog>> callLogs() async =>
-      _l(await _d.get('/calls/logs'))
-          .map((e) => CallLog.fromJson((e as Map).cast<String, dynamic>()))
-          .toList();
+  Future<List<CallLog>> callLogs() async => _l(
+    await _d.get('/calls/logs'),
+  ).map((e) => CallLog.fromJson((e as Map).cast<String, dynamic>())).toList();
 
   // ── Message Actions ──────────────────────────────────────────────────
-  Future<Map<String, dynamic>> addReaction(String messageId, String emoji) async =>
-      _j(await _d.post('/messages/$messageId/reactions', data: {'emoji': emoji}));
+  Future<Map<String, dynamic>> addReaction(
+    String messageId,
+    String emoji,
+  ) async => _j(
+    await _d.post('/messages/$messageId/reactions', data: {'emoji': emoji}),
+  );
 
-  Future<void> removeReaction(String messageId) => _d.delete('/messages/$messageId/reactions');
+  Future<void> removeReaction(String messageId) =>
+      _d.delete('/messages/$messageId/reactions');
 
   Future<Map<String, dynamic>> messageInfo(String messageId) async =>
       _j(await _d.get('/messages/$messageId/info'));
 
-  Future<List<GbMessage>> forwardMessages(List<String> messageIds, String targetChatId) async {
-    final j = _j(await _d.post('/messages/forward', data: {'messageIds': messageIds, 'targetChatId': targetChatId}));
-    return (j as List).map((e) => GbMessage.fromJson((e as Map).cast<String, dynamic>())).toList();
+  Future<List<GbMessage>> forwardMessages(
+    List<String> messageIds,
+    String targetChatId,
+  ) async {
+    final j = _j(
+      await _d.post(
+        '/messages/forward',
+        data: {'messageIds': messageIds, 'targetChatId': targetChatId},
+      ),
+    );
+    return (j as List)
+        .map((e) => GbMessage.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
   }
 
   Future<List<GbMessage>> searchMessages(String chatId, String q) async {
     final r = await _d.get('/chats/$chatId/search', queryParameters: {'q': q});
-    return (r.data as List).map((e) => GbMessage.fromJson((e as Map).cast<String, dynamic>())).toList();
+    return (r.data as List)
+        .map((e) => GbMessage.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
   }
 
   // ── Copy ─────────────────────────────────────────────────────────────

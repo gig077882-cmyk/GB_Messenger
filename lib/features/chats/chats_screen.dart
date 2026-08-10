@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_state.dart';
@@ -46,14 +46,22 @@ class _ChatsScreenState extends State<ChatsScreen> {
               children: [
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Text('Закреплённые', style: TextStyle(
-                    color: GBTheme.textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
+                  child: Text(
+                    'Закреплённые',
+                    style: TextStyle(
+                      color: GBTheme.textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-                ...pinned.map((c) => _ChatTile(
-                      chat: c,
-                      pinned: true,
-                      onSwipe: (action) => _onSwipe(c.id, action),
-                    )),
+                ...pinned.map(
+                  (c) => _ChatTile(
+                    chat: c,
+                    pinned: true,
+                    onSwipe: (action) => _onSwipe(c.id, action),
+                  ),
+                ),
                 if (others.isNotEmpty)
                   Divider(height: 1, color: theme.theme.stroke),
               ],
@@ -75,13 +83,19 @@ class _ChatsScreenState extends State<ChatsScreen> {
     if (action == 'pin') {
       setState(() => _pinned.add(chatId));
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Чат закреплён'), duration: Duration(seconds: 1)),
+        const SnackBar(
+          content: Text('Чат закреплён'),
+          duration: Duration(seconds: 1),
+        ),
       );
     } else if (action == 'unpin') {
       setState(() => _pinned.remove(chatId));
     } else if (action == 'mute') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Чат без звука'), duration: Duration(seconds: 1)),
+        const SnackBar(
+          content: Text('Чат без звука'),
+          duration: Duration(seconds: 1),
+        ),
       );
     } else if (action == 'delete') {
       setState(() {});
@@ -94,7 +108,11 @@ class _ChatTile extends StatelessWidget {
   final bool pinned;
   final void Function(String action) onSwipe;
 
-  const _ChatTile({required this.chat, required this.pinned, required this.onSwipe});
+  const _ChatTile({
+    required this.chat,
+    required this.pinned,
+    required this.onSwipe,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +133,10 @@ class _ChatTile extends StatelessWidget {
         color: GBTheme.whatsAppGreen,
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 20),
-        child: Icon(pinned ? Icons.push_pin_outlined : Icons.push_pin, color: Colors.white),
+        child: Icon(
+          pinned ? Icons.push_pin_outlined : Icons.push_pin,
+          color: Colors.white,
+        ),
       ),
       secondaryBackground: Container(
         color: Colors.red,
@@ -133,9 +154,9 @@ class _ChatTile extends StatelessWidget {
       },
       onDismissed: (_) => onSwipe('delete'),
       child: InkWell(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => ChatScreen(chatId: chat.id),
-        )),
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => ChatScreen(chatId: chat.id))),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Row(
@@ -157,7 +178,11 @@ class _ChatTile extends StatelessWidget {
                         if (pinned)
                           const Padding(
                             padding: EdgeInsets.only(right: 4),
-                            child: Icon(Icons.push_pin, size: 14, color: GBTheme.textSecondary),
+                            child: Icon(
+                              Icons.push_pin,
+                              size: 14,
+                              color: GBTheme.textSecondary,
+                            ),
                           ),
                         Expanded(
                           child: Text(
@@ -165,7 +190,9 @@ class _ChatTile extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontWeight: chat.unreadCount > 0 ? FontWeight.w600 : FontWeight.w500,
+                              fontWeight: chat.unreadCount > 0
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
                               fontSize: 16,
                               color: theme.theme.textMain,
                             ),
@@ -176,7 +203,9 @@ class _ChatTile extends StatelessWidget {
                           shortTime(chat.lastMessageAt),
                           style: TextStyle(
                             fontSize: 12,
-                            color: chat.unreadCount > 0 ? GBTheme.whatsAppGreen : theme.theme.textHint,
+                            color: chat.unreadCount > 0
+                                ? GBTheme.whatsAppGreen
+                                : theme.theme.textHint,
                           ),
                         ),
                       ],
@@ -187,7 +216,10 @@ class _ChatTile extends StatelessWidget {
                         if (isMine && last != null)
                           Padding(
                             padding: const EdgeInsets.only(right: 4),
-                            child: StatusTicks(status: last.localStatus, size: 12),
+                            child: StatusTicks(
+                              status: last.localStatus,
+                              size: 12,
+                            ),
                           ),
                         Expanded(
                           child: Text(
@@ -196,29 +228,49 @@ class _ChatTile extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 13.5,
-                              color: typing ? GBTheme.whatsAppGreen : theme.theme.textHint,
-                              fontWeight: chat.unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
+                              color: typing
+                                  ? GBTheme.whatsAppGreen
+                                  : theme.theme.textHint,
+                              fontWeight: chat.unreadCount > 0
+                                  ? FontWeight.w500
+                                  : FontWeight.normal,
                             ),
                           ),
                         ),
                         if (chat.unreadCount > 0) ...[
                           const SizedBox(width: 8),
                           Container(
-                            constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            constraints: const BoxConstraints(
+                              minWidth: 20,
+                              minHeight: 20,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: GBTheme.whatsAppGreen,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(
-                              child: Text('${chat.unreadCount}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+                              child: Text(
+                                '${chat.unreadCount}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                         if (chat.isMuted && chat.unreadCount == 0) ...[
                           const SizedBox(width: 4),
-                          const Icon(Icons.volume_off, size: 16, color: GBTheme.textSecondary),
+                          const Icon(
+                            Icons.volume_off,
+                            size: 16,
+                            color: GBTheme.textSecondary,
+                          ),
                         ],
                       ],
                     ),

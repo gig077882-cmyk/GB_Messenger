@@ -37,7 +37,11 @@ class _AddByPhoneScreenState extends State<AddByPhoneScreen> {
       setState(() => _error = 'Введите корректный номер');
       return;
     }
-    setState(() { _searching = true; _error = null; _found = null; });
+    setState(() {
+      _searching = true;
+      _error = null;
+      _found = null;
+    });
     try {
       final users = await _api.searchByPhone(phone);
       if (mounted) {
@@ -48,7 +52,12 @@ class _AddByPhoneScreenState extends State<AddByPhoneScreen> {
         });
       }
     } catch (e) {
-      if (mounted) { setState(() { _searching = false; _error = '$e'; }); }
+      if (mounted) {
+        setState(() {
+          _searching = false;
+          _error = '$e';
+        });
+      }
     }
   }
 
@@ -65,7 +74,10 @@ class _AddByPhoneScreenState extends State<AddByPhoneScreen> {
               controller: _phoneCtrl,
               keyboardType: TextInputType.phone,
               autofocus: true,
-              onChanged: (_) => setState(() { _error = null; _found = null; }),
+              onChanged: (_) => setState(() {
+                _error = null;
+                _found = null;
+              }),
               decoration: InputDecoration(
                 hintText: '+7 (912) 345-67-89',
                 labelText: 'Номер телефона',
@@ -81,36 +93,51 @@ class _AddByPhoneScreenState extends State<AddByPhoneScreen> {
               loading: _searching,
             ),
             const SizedBox(height: 24),
-              if (_found != null) ...[
-                Center(
-                  child: GBAvatar(url: _found!.avatarUrl, name: _found!.displayName, size: 72),
+            if (_found != null) ...[
+              Center(
+                child: GBAvatar(
+                  url: _found!.avatarUrl,
+                  name: _found!.displayName,
+                  size: 72,
                 ),
+              ),
               const SizedBox(height: 12),
               Center(
-                child: Text(_found!.displayName,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                child: Text(
+                  _found!.displayName,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
               const SizedBox(height: 4),
               Center(
-                child: Text(_found!.phone ?? _found!.email,
-                    style: const TextStyle(color: GBTheme.textSecondary)),
+                child: Text(
+                  _found!.phone ?? _found!.email,
+                  style: const TextStyle(color: GBTheme.textSecondary),
+                ),
               ),
               const SizedBox(height: 20),
               NeonButton(
                 label: 'Написать',
                 icon: Icons.chat,
                 onPressed: () async {
-                   try {
-                     final chat = await _api.createDirect(_found!.id);
-                     if (!context.mounted) return;
-                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                       builder: (_) => ChatScreen(chatId: chat.id),
-                     ));
-                   } catch (e) {
-                     if (context.mounted) {
-                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
-                     }
-                   }
+                  try {
+                    final chat = await _api.createDirect(_found!.id);
+                    if (!context.mounted) return;
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => ChatScreen(chatId: chat.id),
+                      ),
+                    );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+                    }
+                  }
                 },
               ),
             ],
@@ -119,10 +146,16 @@ class _AddByPhoneScreenState extends State<AddByPhoneScreen> {
               Center(
                 child: Column(
                   children: [
-                    const Icon(Icons.person_off, size: 48, color: Color(0xFF2A2A2A)),
+                    const Icon(
+                      Icons.person_off,
+                      size: 48,
+                      color: Color(0xFF2A2A2A),
+                    ),
                     const SizedBox(height: 12),
-                    const Text('Пользователь не найден',
-                        style: TextStyle(color: Color(0xFF8A8A8A))),
+                    const Text(
+                      'Пользователь не найден',
+                      style: TextStyle(color: Color(0xFF8A8A8A)),
+                    ),
                   ],
                 ),
               ),

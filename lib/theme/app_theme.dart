@@ -10,9 +10,17 @@ class AccentColor {
   static const green = AccentColor('WhatsApp', Color(0xFF25D366), Colors.white);
   static const teal = AccentColor('Бирюзовый', Color(0xFF128C7E), Colors.white);
   static const blue = AccentColor('Синий', Color(0xFF4D9FFF), Colors.white);
-  static const purple = AccentColor('Фиолетовый', Color(0xFFB44DFF), Colors.white);
+  static const purple = AccentColor(
+    'Фиолетовый',
+    Color(0xFFB44DFF),
+    Colors.white,
+  );
   static const pink = AccentColor('Розовый', Color(0xFFFF4D8F), Colors.white);
-  static const orange = AccentColor('Оранжевый', Color(0xFFFF8C4D), Colors.white);
+  static const orange = AccentColor(
+    'Оранжевый',
+    Color(0xFFFF8C4D),
+    Colors.white,
+  );
 
   static const all = [green, teal, blue, purple, pink, orange];
 }
@@ -22,10 +30,7 @@ class GBTheme {
   final bool isDark;
   final AccentColor accent;
 
-  const GBTheme({
-    this.isDark = false,
-    this.accent = AccentColor.green,
-  });
+  const GBTheme({this.isDark = false, this.accent = AccentColor.green});
 
   // WhatsApp signature colors
   static const Color whatsAppDark = Color(0xFF075E54);
@@ -47,7 +52,8 @@ class GBTheme {
 
   Color get bg => isDark ? surfaceDark : surfaceLight;
   Color get surface => isDark ? const Color(0xFF1F2C34) : Colors.white;
-  Color get surfaceHigh => isDark ? const Color(0xFF2A3942) : const Color(0xFFF5F5F5);
+  Color get surfaceHigh =>
+      isDark ? const Color(0xFF2A3942) : const Color(0xFFF5F5F5);
   Color get stroke => isDark ? const Color(0xFF2A3942) : divider;
   Color get textMain => isDark ? const Color(0xFFE9EDF0) : textPrimary;
   Color get textHint => isDark ? const Color(0xFF8696A0) : textSecondary;
@@ -71,13 +77,15 @@ class GBTheme {
         );
 
   LinearGradient get primaryGradient => const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFF25D366), Color(0xFF128C7E)],
-      );
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF25D366), Color(0xFF128C7E)],
+  );
 
   ThemeData build() {
-    final base = isDark ? ThemeData.dark(useMaterial3: true) : ThemeData.light(useMaterial3: true);
+    final base = isDark
+        ? ThemeData.dark(useMaterial3: true)
+        : ThemeData.light(useMaterial3: true);
     return base.copyWith(
       scaffoldBackgroundColor: bg,
       colorScheme: base.colorScheme.copyWith(
@@ -114,7 +122,10 @@ class GBTheme {
         filled: true,
         fillColor: surface,
         hintStyle: TextStyle(color: textHint),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide(color: stroke),
@@ -135,7 +146,9 @@ class GBTheme {
           elevation: 0,
           shadowColor: Colors.transparent,
           textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           padding: const EdgeInsets.symmetric(vertical: 14),
         ),
       ),
@@ -143,7 +156,9 @@ class GBTheme {
         style: TextButton.styleFrom(foregroundColor: whatsAppGreen),
       ),
       iconTheme: IconThemeData(color: textHint),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(color: whatsAppGreen),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: whatsAppGreen,
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: whatsAppGreen,
         foregroundColor: Colors.white,
@@ -179,28 +194,33 @@ class GBTheme {
     );
   }
 
-  GBTheme copyWith({bool? isDark, AccentColor? accent}) => GBTheme(
-        isDark: isDark ?? this.isDark,
-        accent: accent ?? this.accent,
-      );
+  GBTheme copyWith({bool? isDark, AccentColor? accent}) =>
+      GBTheme(isDark: isDark ?? this.isDark, accent: accent ?? this.accent);
 }
 
 /// Неоновое свечение для акцентов.
-List<BoxShadow> glow({Color color = const Color(0xFF25D366), double blur = 20}) => [
-      BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: blur, spreadRadius: 0),
-      BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: blur * 2),
-    ];
+List<BoxShadow> glow({
+  Color color = const Color(0xFF25D366),
+  double blur = 20,
+}) => [
+  BoxShadow(
+    color: color.withValues(alpha: 0.3),
+    blurRadius: blur,
+    spreadRadius: 0,
+  ),
+  BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: blur * 2),
+];
 
 /// WhatsApp-style layered shadow.
 List<BoxShadow> softShadow({double opacity = 0.08}) => [
-      BoxShadow(
-        color: Colors.black.withValues(alpha: opacity),
-        blurRadius: 8,
-        offset: const Offset(0, 2),
-      ),
-      BoxShadow(
-        color: Colors.black.withValues(alpha: opacity * 0.5),
-        blurRadius: 16,
-        offset: const Offset(0, 4),
-      ),
-    ];
+  BoxShadow(
+    color: Colors.black.withValues(alpha: opacity),
+    blurRadius: 8,
+    offset: const Offset(0, 2),
+  ),
+  BoxShadow(
+    color: Colors.black.withValues(alpha: opacity * 0.5),
+    blurRadius: 16,
+    offset: const Offset(0, 4),
+  ),
+];

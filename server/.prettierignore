@@ -1,0 +1,6 @@
+src/generated/**
+dist/**
+node_modules/**
+*.sh
+schema.prisma
+package-lock.json

@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -44,7 +44,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final ApiService _api = ApiService.instance;
   final ChatRepository _repo = ChatRepository();
   AppState? _app;
-  StreamSubscription? _subMsg, _subUpd, _subDel, _subRead, _subTyping, _subChat, _subReaction;
+  StreamSubscription? _subMsg,
+      _subUpd,
+      _subDel,
+      _subRead,
+      _subTyping,
+      _subChat,
+      _subReaction;
 
   @override
   void initState() {
@@ -135,7 +141,12 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _onReaction(String messageId, String userId, String? emoji, String action) {
+  void _onReaction(
+    String messageId,
+    String userId,
+    String? emoji,
+    String action,
+  ) {
     setState(() {
       for (final m in _messages) {
         if (m.id != messageId) continue;
@@ -157,11 +168,14 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       if (_messages.any((e) => e.id == m.id)) return;
       if (m.senderId == _app!.myId &&
-          _messages.any((e) =>
-              e.senderId == m.senderId &&
-              e.type == m.type &&
-              e.mediaKey == m.mediaKey &&
-              e.createdAt.difference(m.createdAt).abs() < const Duration(seconds: 3))) {
+          _messages.any(
+            (e) =>
+                e.senderId == m.senderId &&
+                e.type == m.type &&
+                e.mediaKey == m.mediaKey &&
+                e.createdAt.difference(m.createdAt).abs() <
+                    const Duration(seconds: 3),
+          )) {
         return;
       }
       _messages.add(_applyServerStatus(m));
@@ -215,15 +229,24 @@ class _ChatScreenState extends State<ChatScreen> {
       if (!_scroll.hasClients) return;
       final target = _scroll.position.maxScrollExtent;
       if (animated) {
-        _scroll.animateTo(target, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+        _scroll.animateTo(
+          target,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
       } else {
         _scroll.jumpTo(target);
       }
     });
   }
 
-  Future<void> _send({String text = '', String? mediaKey, String? mediaUrl,
-      String type = 'TEXT', Map<String, dynamic>? mediaMeta}) async {
+  Future<void> _send({
+    String text = '',
+    String? mediaKey,
+    String? mediaUrl,
+    String type = 'TEXT',
+    Map<String, dynamic>? mediaMeta,
+  }) async {
     if (_sending) return;
     final t = (text.isEmpty && mediaKey == null) ? null : text;
     if (t == null && mediaKey == null) return;
@@ -266,7 +289,8 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       if (mounted) setState(() => _replyTo = null);
     } catch (e) {
-      final isNetworkError = e.toString().contains('SocketException') ||
+      final isNetworkError =
+          e.toString().contains('SocketException') ||
           e.toString().contains('Connection') ||
           e.toString().contains('Timeout');
       if (isNetworkError && (t != null || mediaKey != null)) {
@@ -289,7 +313,9 @@ class _ChatScreenState extends State<ChatScreen> {
         final i = _messages.indexWhere((e) => e.id == local.id);
         if (i >= 0) {
           _messages[i] = local.copyWith(
-            localStatus: isNetworkError ? MessageStatus.sending : MessageStatus.failed,
+            localStatus: isNetworkError
+                ? MessageStatus.sending
+                : MessageStatus.failed,
           );
         }
       });
@@ -309,17 +335,28 @@ class _ChatScreenState extends State<ChatScreen> {
     _typingDebounce?.cancel();
     if (_input.text.isNotEmpty) {
       _setTyping(true);
-      _typingDebounce = Timer(const Duration(seconds: 2), () => _setTyping(false));
+      _typingDebounce = Timer(
+        const Duration(seconds: 2),
+        () => _setTyping(false),
+      );
     } else {
       _setTyping(false);
     }
   }
 
   Future<void> _pickImage() async {
-    final p = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 82);
+    final p = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 82,
+    );
     if (p == null) return;
     final compressed = await _compressImage(p.path);
-    await _uploadAndSend(compressed.path, p.name, p.mimeType ?? 'image/jpeg', 'IMAGE');
+    await _uploadAndSend(
+      compressed.path,
+      p.name,
+      p.mimeType ?? 'image/jpeg',
+      'IMAGE',
+    );
   }
 
   Future<void> _pickFile() async {
@@ -327,18 +364,33 @@ class _ChatScreenState extends State<ChatScreen> {
     if (r == null || r.files.isEmpty) return;
     final f = r.files.first;
     if (f.path == null) return;
-    final isImage = f.extension != null && ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'].contains(f.extension!.toLowerCase());
+    final isImage =
+        f.extension != null &&
+        [
+          'jpg',
+          'jpeg',
+          'png',
+          'gif',
+          'webp',
+          'heic',
+        ].contains(f.extension!.toLowerCase());
     await _uploadAndSend(
-      f.path!, f.name, f.extension == null ? 'application/octet-stream' : 'application/$f.extension',
+      f.path!,
+      f.name,
+      f.extension == null
+          ? 'application/octet-stream'
+          : 'application/$f.extension',
       isImage ? 'IMAGE' : 'DOCUMENT',
     );
   }
 
   Future<File> _compressImage(String path) async {
     final dir = await getTemporaryDirectory();
-    final targetPath = '${dir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final targetPath =
+        '${dir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final result = await FlutterImageCompress.compressAndGetFile(
-      path, targetPath,
+      path,
+      targetPath,
       quality: 75,
       minWidth: 1280,
       minHeight: 1280,
@@ -346,11 +398,20 @@ class _ChatScreenState extends State<ChatScreen> {
     return File(result?.path ?? path);
   }
 
-  Future<void> _uploadAndSend(String path, String fileName, String mime, String type) async {
+  Future<void> _uploadAndSend(
+    String path,
+    String fileName,
+    String mime,
+    String type,
+  ) async {
     final file = File(path);
     try {
       final size = await file.length();
-      final pre = await _api.presign(fileName: fileName, mimeType: mime, size: size);
+      final pre = await _api.presign(
+        fileName: fileName,
+        mimeType: mime,
+        size: size,
+      );
       final bytes = await file.readAsBytes();
       await _api.uploadBytes(pre.uploadUrl, bytes, mime);
       await _send(
@@ -361,7 +422,9 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Не удалось отправить файл: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Не удалось отправить файл: $e')),
+        );
       }
     }
   }
@@ -374,7 +437,10 @@ class _ChatScreenState extends State<ChatScreen> {
             SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
             ),
             SizedBox(width: 12),
             Text('Загрузка аудио...'),
@@ -385,22 +451,33 @@ class _ChatScreenState extends State<ChatScreen> {
     );
     try {
       final pre = await _api.presign(
-          fileName: 'voice_${DateTime.now().millisecondsSinceEpoch}.m4a',
-          mimeType: 'audio/m4a',
-          size: size);
+        fileName: 'voice_${DateTime.now().millisecondsSinceEpoch}.m4a',
+        mimeType: 'audio/m4a',
+        size: size,
+      );
       final file = File(path);
-      await _api.uploadBytes(pre.uploadUrl, await file.readAsBytes(), 'audio/m4a');
+      await _api.uploadBytes(
+        pre.uploadUrl,
+        await file.readAsBytes(),
+        'audio/m4a',
+      );
       await _send(
         mediaKey: pre.key,
         mediaUrl: pre.downloadUrl,
         type: 'VOICE',
-        mediaMeta: {'durationMs': durationMs, 'size': size, 'mimeType': 'audio/m4a'},
+        mediaMeta: {
+          'durationMs': durationMs,
+          'size': size,
+          'mimeType': 'audio/m4a',
+        },
       );
       if (mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
       }
     }
   }
@@ -421,7 +498,10 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.add_reaction, color: GBTheme.whatsAppGreen),
+              leading: const Icon(
+                Icons.add_reaction,
+                color: GBTheme.whatsAppGreen,
+              ),
               title: const Text('Реакция'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -435,9 +515,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 onTap: () {
                   Navigator.pop(ctx);
                   Clipboard.setData(ClipboardData(text: m.text));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Скопировано')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('Скопировано')));
                 },
               ),
             ListTile(
@@ -449,7 +529,10 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.info_outline, color: GBTheme.whatsAppGreen),
+              leading: const Icon(
+                Icons.info_outline,
+                color: GBTheme.whatsAppGreen,
+              ),
               title: const Text('Инфо'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -486,8 +569,9 @@ class _ChatScreenState extends State<ChatScreen> {
             Navigator.pop(ctx);
             _api.addReaction(m.id, emoji);
             setState(() {
-              m.reactions = m.reactions.where((r) => r.userId != _app!.myId).toList()
-                ..add(MessageReaction(userId: _app!.myId, emoji: emoji));
+              m.reactions =
+                  m.reactions.where((r) => r.userId != _app!.myId).toList()
+                    ..add(MessageReaction(userId: _app!.myId, emoji: emoji));
             });
           },
         ),
@@ -519,7 +603,11 @@ class _ChatScreenState extends State<ChatScreen> {
       await _api.editMessage(_pendingEdit!.id, t);
       setState(() {
         final i = _messages.indexWhere((e) => e.id == _pendingEdit!.id);
-        if (i >= 0) _messages[i] = _messages[i].copyWith(localStatus: _messages[i].localStatus);
+        if (i >= 0) {
+          _messages[i] = _messages[i].copyWith(
+            localStatus: _messages[i].localStatus,
+          );
+        }
       });
       _pendingEdit = null;
       _input.clear();
@@ -538,11 +626,15 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: GBTheme.chatBg,
       appBar: AppBar(
         title: InkWell(
-          onTap: () => Navigator.of(context).pushNamed('/chat-info', arguments: widget.chatId),
+          onTap: () => Navigator.of(
+            context,
+          ).pushNamed('/chat-info', arguments: widget.chatId),
           child: Row(
             children: [
               GBAvatar(
-                url: _chat?.type == 'DIRECT' ? peer?.avatarUrl : _chat?.avatarUrl,
+                url: _chat?.type == 'DIRECT'
+                    ? peer?.avatarUrl
+                    : _chat?.avatarUrl,
                 name: title,
                 size: 36,
                 showOnline: _chat?.type == 'DIRECT',
@@ -552,13 +644,22 @@ class _ChatScreenState extends State<ChatScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
                   Text(
                     typingUser != null
                         ? 'печатает…'
                         : (peer?.isOnline == true ? 'в сети' : ''),
                     style: TextStyle(
-                      color: typingUser != null ? const Color(0xFFDCF8C6) : Colors.white70,
+                      color: typingUser != null
+                          ? const Color(0xFFDCF8C6)
+                          : Colors.white70,
                       fontSize: 12,
                     ),
                   ),
@@ -570,19 +671,30 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.videocam, color: Colors.white),
-            onPressed: () => Navigator.of(context).pushNamed('/call-screen', arguments: widget.chatId),
+            onPressed: () => Navigator.of(
+              context,
+            ).pushNamed('/call-screen', arguments: widget.chatId),
           ),
           IconButton(
             icon: const Icon(Icons.call, color: Colors.white),
-            onPressed: () => Navigator.of(context).pushNamed('/call-screen', arguments: widget.chatId),
+            onPressed: () => Navigator.of(
+              context,
+            ).pushNamed('/call-screen', arguments: widget.chatId),
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onSelected: (v) {
-              if (v == 'info') Navigator.of(context).pushNamed('/chat-info', arguments: widget.chatId);
+              if (v == 'info') {
+                Navigator.of(
+                  context,
+                ).pushNamed('/chat-info', arguments: widget.chatId);
+              }
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'info', child: Text('Информация о чате')),
+              const PopupMenuItem(
+                value: 'info',
+                child: Text('Информация о чате'),
+              ),
             ],
           ),
         ],
@@ -593,56 +705,73 @@ class _ChatScreenState extends State<ChatScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _messages.isEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.waving_hand_outlined, size: 64, color: GBTheme.chatBg.withValues(alpha: 0.5)),
-                              const SizedBox(height: 16),
-                              Text('Начни общение',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: GBTheme.textPrimary)),
-                              const SizedBox(height: 6),
-                              const Text('Сообщения защищены TLS-соединением',
-                                  style: TextStyle(color: GBTheme.textSecondary)),
-                            ],
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.waving_hand_outlined,
+                            size: 64,
+                            color: GBTheme.chatBg.withValues(alpha: 0.5),
                           ),
-                        ),
-                      )
-                    : ListView.builder(
-                        controller: _scroll,
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        itemCount: _messages.length,
-                        itemBuilder: (_, i) {
-                          final m = _messages[i];
-                          final prev = i > 0 ? _messages[i - 1] : null;
-                          final showDate = prev == null ||
-                              !_sameDay(prev.createdAt, m.createdAt);
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (showDate) _DateHeader(date: m.createdAt),
-                              Bubble(
-                                message: m,
-                                myId: app.myId,
-                                showHeader: prev == null || prev.senderId != m.senderId,
-                                replyPreview: _replyPreview(m.replyToId),
-                                onLongPress: () => _onLongPress(m),
-                              ),
-                            ],
-                          );
-                        },
+                          const SizedBox(height: 16),
+                          Text(
+                            'Начни общение',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: GBTheme.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Сообщения защищены TLS-соединением',
+                            style: TextStyle(color: GBTheme.textSecondary),
+                          ),
+                        ],
                       ),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scroll,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    itemCount: _messages.length,
+                    itemBuilder: (_, i) {
+                      final m = _messages[i];
+                      final prev = i > 0 ? _messages[i - 1] : null;
+                      final showDate =
+                          prev == null ||
+                          !_sameDay(prev.createdAt, m.createdAt);
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (showDate) _DateHeader(date: m.createdAt),
+                          Bubble(
+                            message: m,
+                            myId: app.myId,
+                            showHeader:
+                                prev == null || prev.senderId != m.senderId,
+                            replyPreview: _replyPreview(m.replyToId),
+                            onLongPress: () => _onLongPress(m),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
           ),
-          if (_replyTo != null) ReplyBar(
-            message: _replyTo!,
-            myId: app.myId,
-            onCancel: () => setState(() => _replyTo = null),
-          ),
-          if (_pendingEdit != null) EditBar(
-            onCancel: () => setState(() => _pendingEdit = null),
-          ),
+          if (_replyTo != null)
+            ReplyBar(
+              message: _replyTo!,
+              myId: app.myId,
+              onCancel: () => setState(() => _replyTo = null),
+            ),
+          if (_pendingEdit != null)
+            EditBar(onCancel: () => setState(() => _pendingEdit = null)),
           InputBar(
             controller: _input,
             onChanged: _onInputChanged,
@@ -685,24 +814,50 @@ class _MessageInfoSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Информация', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          const Text(
+            'Информация',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 16),
-          _infoRow(Icons.check, 'Отправлено', info['sentAt']?.toString() ?? '', theme),
+          _infoRow(
+            Icons.check,
+            'Отправлено',
+            info['sentAt']?.toString() ?? '',
+            theme,
+          ),
           if (deliveredTo.isNotEmpty)
-            _infoRow(Icons.done_all, 'Доставлено', '${deliveredTo.length} получателям', theme),
+            _infoRow(
+              Icons.done_all,
+              'Доставлено',
+              '${deliveredTo.length} получателям',
+              theme,
+            ),
           if (readTo.isNotEmpty)
-            _infoRow(Icons.done_all, 'Прочитано', '${readTo.length} получателям', theme),
+            _infoRow(
+              Icons.done_all,
+              'Прочитано',
+              '${readTo.length} получателям',
+              theme,
+            ),
           const SizedBox(height: 12),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Закрыть', style: TextStyle(color: GBTheme.whatsAppGreen)),
+            child: const Text(
+              'Закрыть',
+              style: TextStyle(color: GBTheme.whatsAppGreen),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value, ThemeProvider theme) {
+  Widget _infoRow(
+    IconData icon,
+    String label,
+    String value,
+    ThemeProvider theme,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -710,7 +865,10 @@ class _MessageInfoSheet extends StatelessWidget {
           Icon(icon, size: 20, color: theme.theme.textHint),
           const SizedBox(width: 12),
           Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
-          Text(value, style: TextStyle(fontSize: 13, color: theme.theme.textHint)),
+          Text(
+            value,
+            style: TextStyle(fontSize: 13, color: theme.theme.textHint),
+          ),
         ],
       ),
     );
@@ -749,23 +907,30 @@ class _DateHeader extends StatelessWidget {
         color: theme.theme.surface.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(text, style: TextStyle(fontSize: 12, color: theme.theme.textHint, fontWeight: FontWeight.w500)),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          color: theme.theme.textHint,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
   String _monthName(int m) => switch (m) {
-        1 => 'янв',
-        2 => 'фев',
-        3 => 'мар',
-        4 => 'апр',
-        5 => 'мая',
-        6 => 'июн',
-        7 => 'июл',
-        8 => 'авг',
-        9 => 'сен',
-        10 => 'окт',
-        11 => 'ноя',
-        12 => 'дек',
-        _ => '',
-      };
+    1 => 'янв',
+    2 => 'фев',
+    3 => 'мар',
+    4 => 'апр',
+    5 => 'мая',
+    6 => 'июн',
+    7 => 'июл',
+    8 => 'авг',
+    9 => 'сен',
+    10 => 'окт',
+    11 => 'ноя',
+    12 => 'дек',
+    _ => '',
+  };
 }

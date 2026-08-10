@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,12 @@ class _ChatInfoScreenState extends State<ChatInfoScreen> {
   Future<void> _load() async {
     try {
       final c = await _api.chat(widget.chatId);
-      if (mounted) setState(() { _chat = c; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _chat = c;
+          _loading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -50,7 +55,9 @@ class _ChatInfoScreenState extends State<ChatInfoScreen> {
                 const SizedBox(height: 24),
                 Center(
                   child: GBAvatar(
-                    url: c.type == 'DIRECT' ? c.peer(app.myId)?.avatarUrl : c.avatarUrl,
+                    url: c.type == 'DIRECT'
+                        ? c.peer(app.myId)?.avatarUrl
+                        : c.avatarUrl,
                     name: c.title(app.myId),
                     size: 96,
                     showOnline: c.type == 'DIRECT',
@@ -59,41 +66,71 @@ class _ChatInfoScreenState extends State<ChatInfoScreen> {
                 ),
                 const SizedBox(height: 16),
                 Center(
-                  child: Text(c.title(app.myId),
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                  child: Text(
+                    c.title(app.myId),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 if (c.type == 'DIRECT' && c.peer(app.myId) != null)
                   Center(
                     child: Text(
                       _peerStatus(c.peer(app.myId)!),
-                      style: const TextStyle(color: GBTheme.textSecondary, fontSize: 13),
+                      style: const TextStyle(
+                        color: GBTheme.textSecondary,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 const SizedBox(height: 24),
                 if (c.type == 'GROUP') ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('Участники (${c.members.length})',
-                        style: TextStyle(
-                          color: GBTheme.whatsAppGreen,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        )),
+                    child: Text(
+                      'Участники (${c.members.length})',
+                      style: TextStyle(
+                        color: GBTheme.whatsAppGreen,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  ...c.members.map((m) => ListTile(
-                        leading: GBAvatar(url: m.user.avatarUrl, name: m.user.displayName, size: 42),
-                        title: Row(
-                          children: [
-                            Flexible(child: Text(m.user.displayName, overflow: TextOverflow.ellipsis)),
-                            if (m.role == 'admin') ...[
-                              const SizedBox(width: 6),
-                              const Text('admin', style: TextStyle(color: GBTheme.whatsAppGreen, fontSize: 11)),
-                            ],
+                  ...c.members.map(
+                    (m) => ListTile(
+                      leading: GBAvatar(
+                        url: m.user.avatarUrl,
+                        name: m.user.displayName,
+                        size: 42,
+                      ),
+                      title: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              m.user.displayName,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (m.role == 'admin') ...[
+                            const SizedBox(width: 6),
+                            const Text(
+                              'admin',
+                              style: TextStyle(
+                                color: GBTheme.whatsAppGreen,
+                                fontSize: 11,
+                              ),
+                            ),
                           ],
-                        ),
-                        subtitle: Text(m.user.email, style: const TextStyle(fontSize: 12)),
-                      )),
+                        ],
+                      ),
+                      subtitle: Text(
+                        m.user.email,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
                 const Divider(height: 1),
                 ListTile(
@@ -112,24 +149,34 @@ class _ChatInfoScreenState extends State<ChatInfoScreen> {
                 if (c.type == 'DIRECT' && c.peer(app.myId) != null)
                   ListTile(
                     leading: const Icon(Icons.block, color: Colors.red),
-                    title: const Text('Заблокировать', style: TextStyle(color: Colors.red)),
-                     onTap: () async {
-                       final messenger = ScaffoldMessenger.of(context);
-                       await _api.blockUser(c.peer(app.myId)!.id);
-                       messenger.showSnackBar(
-                         const SnackBar(content: Text('Пользователь заблокирован')),
-                       );
-                     },
+                    title: const Text(
+                      'Заблокировать',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onTap: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      await _api.blockUser(c.peer(app.myId)!.id);
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Пользователь заблокирован'),
+                        ),
+                      );
+                    },
                   ),
                 if (c.type == 'GROUP')
                   ListTile(
                     leading: const Icon(Icons.logout, color: Colors.red),
-                    title: const Text('Покинуть группу', style: TextStyle(color: Colors.red)),
-                     onTap: () async {
-                       await _api.leaveChat(widget.chatId);
-                       await app.refreshChats();
-                       if (context.mounted) Navigator.of(context).popUntil((r) => r.isFirst);
-                     },
+                    title: const Text(
+                      'Покинуть группу',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onTap: () async {
+                      await _api.leaveChat(widget.chatId);
+                      await app.refreshChats();
+                      if (context.mounted) {
+                        Navigator.of(context).popUntil((r) => r.isFirst);
+                      }
+                    },
                   ),
               ],
             ),

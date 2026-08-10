@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/app_state.dart';
@@ -34,10 +34,15 @@ class _HomeShellState extends State<HomeShell> {
           PopupMenuButton<String>(
             onSelected: (v) {
               if (v == 'settings') Navigator.of(context).pushNamed('/settings');
-              if (v == 'new-group') Navigator.of(context).pushNamed('/group-create');
+              if (v == 'new-group') {
+                Navigator.of(context).pushNamed('/group-create');
+              }
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'new-group', child: Text('Новая группа')),
+              const PopupMenuItem(
+                value: 'new-group',
+                child: Text('Новая группа'),
+              ),
               const PopupMenuItem(value: 'settings', child: Text('Настройки')),
             ],
           ),
@@ -59,11 +64,11 @@ class _HomeShellState extends State<HomeShell> {
               child: const Icon(Icons.chat),
             )
           : _tab == 1
-              ? FloatingActionButton(
-                  onPressed: () => Navigator.of(context).pushNamed('/new-chat'),
-                  child: const Icon(Icons.camera_alt),
-                )
-              : null,
+          ? FloatingActionButton(
+              onPressed: () => Navigator.of(context).pushNamed('/new-chat'),
+              child: const Icon(Icons.camera_alt),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _tab,
         onTap: (i) => setState(() => _tab = i),
